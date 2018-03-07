@@ -202,21 +202,26 @@ void enemyMove(char map[][20],int charPosition[][3])
    charPosition[1][1]=row;
    charPosition[1][2]=column;
 }
-
+//Checks the distance between two character
 int charDistance(int char1,int char2,int charPosition[][3])
 {
+   //Get position of the first character
    int char1Row = charPosition[char1][1], char1Column = charPosition[char1][2];
+   //Get position of the second character
    int char2Row = charPosition[char2][1], char2Column = charPosition[char2][2];
+   //Display the characters coordinates for testing
    cout << endl << "Hero " << char1Row << " " << char1Column << endl;
    cout << "Enemy " << char2Row << " " << char2Column << endl;
+   //Return the distance
    return sqrt(pow((char1Row - char2Row),2) + pow((char1Column-char2Column),2));
 }
-
+//Checks distance between a character and a point
 int checkDistance(int char1,int char2Row,int char2Column,int charPosition[][3])
 {
    int char1Row = charPosition[char1][1], char1Column = charPosition[char1][2];
    return sqrt(pow((char1Row - char2Row),2) + pow((char1Column-char2Column),2));
 }
+//Returns the minimum of two numbers
 int min(int d1,int d2)
 {
    if(d1<d2)

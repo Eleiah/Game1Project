@@ -21,10 +21,15 @@ int main()
    char move;
    int charPosition[20][3] = {};
    srand(time(0));
+   //Creat map
    creatMap(map);
+   //Place hero
    placeChar(map,charPosition);
+   //Place an Enemy
    placeEnemy(map,charPosition);
+   //Print map
    printMap(map);
+   //Keep moving until input ins't wasd
    do
    {
       cin >> move;
@@ -32,6 +37,7 @@ int main()
       moveChar(map,move,charPosition);
       enemyMove(map,charPosition);
       printMap(map);
+      //Print distance between character 0 and 1
       cout << charDistance(0,1,charPosition) << endl;
    }while(move == 'a' ||move == 's' ||move == 'd' ||move == 'w');
 }

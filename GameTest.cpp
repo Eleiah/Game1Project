@@ -83,15 +83,19 @@ void printMap(char map[][20])
 void placeChar(char map[][20],int charPosition[][3])
 {
    int x, y;
+   //Keep placing the character while the placement isn't a floor tile
    do
    {
       x =1+rand()%18;
       y =1+rand()%18;
    }while(map[x][y] != '.');
+   //Store character in map
    map[x][y] = 'A';
+   //Store characters position
    charPosition[numChars][0] = 1;
    charPosition[numChars][1] = x;
    charPosition[numChars][2] = y;
+   //Increment number of characters
    numChars++;
 }
 //Play Enemy
@@ -109,6 +113,7 @@ void placeEnemy(char map[][20],int charPosition[][3])
    charPosition[numChars][0] = 2;
    charPosition[numChars][1] = row;
    charPosition[numChars][2] = column;
+   //Increment number of characters
    numChars++;
 }
 //Character movement

@@ -4,7 +4,7 @@
 using namespace std;
 
 void printMap(char[][20]);
-void creatMap(char[][20]);
+void createMap(char[][20]);
 void placeChar(char[][20],int[][3]);
 void placeEnemy(char[][20],int[][3]);
 void moveChar(char[][20],char,int[][3]);
@@ -21,7 +21,7 @@ int main()
    char move;
    int charPosition[20][3] = {};
    srand(time(0));
-   creatMap(map);
+   createMap(map);
    placeChar(map,charPosition);
    placeEnemy(map,charPosition);
    printMap(map);
@@ -36,7 +36,7 @@ int main()
    }while(move == 'a' ||move == 's' ||move == 'd' ||move == 'w');
 }
 //Creates Map
-void creatMap(char map[][20])
+void createMap(char map[][20])
 {
    //Initalize the floor
    for(int i = 0;i<20;i++)
@@ -98,7 +98,7 @@ void placeChar(char map[][20],int charPosition[][3])
 void placeEnemy(char map[][20],int charPosition[][3])
 {
    int row,column;
-   //Keep placing the enemy until he is placed not on the floor or hero
+   //Keep placing the enemy until he is placed in an empty location
    do
    {
       row =1+rand()%18;
@@ -117,26 +117,28 @@ void moveChar(char map[][20], char move,int charPosition[][3])
    int currentI,currentJ;
    currentI = charPosition[0][1];
    currentJ = charPosition[0][2];
-   if(move == 'a' && map[currentI][currentJ-1] != '#')
+   int newPos[2] = {};
+   if(move == 'a')
    {
-      map[currentI][currentJ] = '.';
-      map[currentI][currentJ-1] = 'A';
-      charPosition[0][2]--;
-   }else if(move == 'd' && map[currentI][currentJ+1] != '#')
+      newPos[1] = -1;
+   }
+   else if(move == 'd')
    {
-      map[currentI][currentJ] = '.';
-      map[currentI][currentJ+1] = 'A';
-      charPosition[0][2]++;
-   }else if(move == 's' && map[currentI+1][currentJ] != '#')
+      newPos[1] = 1;
+   }
+   else if(move == 's')
    {
-      map[currentI][currentJ] = '.';
-      map[currentI+1][currentJ] = 'A';
-      charPosition[0][1]++;
-   }else if(move == 'w' && map[currentI-1][currentJ] != '#')
+      newPos[0] = 1;
+   }
+   else if(move == 'w')
    {
+      newPos[0] = -1;
+   }
+   if(map[currentI + newPos[0]][currentJ + newPos[1]] != '#') { 
       map[currentI][currentJ] = '.';
-      map[currentI-1][currentJ] = 'A';
-      charPosition[0][1]--;
+      map[currentI + newPos[0]][currentJ + newPos[1]] = 'A';
+      charPosition[0][1] = currentI + newPos[0];
+      charPosition[0][2] = currentJ + newPos[1];
    }
 }
 
@@ -173,18 +175,14 @@ void enemyMove(char map[][20],int charPosition[][3])
       int moves[2] = {};
       if(dist1 == smallD) {
          moves[0] = 1;
-         moves[1] = 0;
       }
       else if(dist2 == smallD) {
          moves[0] = -1;
-         moves[1] = 0;
       }
       else if(dist3 == smallD) {
-         moves[0] = 0;
          moves[1] = 1;
       }
       else {
-         moves[0] = 0;
          moves[1] = -1;
       }
       if(map[currentI + moves[0]][currentJ + moves [1]] != '#'){

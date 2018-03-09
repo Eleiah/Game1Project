@@ -11,7 +11,6 @@ void moveChar(char[][20],char,int[][3]);
 void enemyMove(char[][20],int[][3]);
 int charDistance(int,int,int[][3]);
 int checkDistance(int,int,int,int[][3]);
-int min(int,int);
 
 int numChars = 0;
 
@@ -157,7 +156,8 @@ void enemyMove(char map[][20],int charPosition[][3])
 {
    int row,column;
    int currentI,currentJ;
-   int dist1,dist2,dist3,dist4,smallD;
+   float moveDirection[2] = {};
+   int moves[2] = {};
    currentI = charPosition[1][1];
    currentJ = charPosition[1][2];
    row = currentI;
@@ -176,29 +176,36 @@ void enemyMove(char map[][20],int charPosition[][3])
             column = currentJ + (rand()%3 - 1);
          }
       }while(map[row][column] == '#');
-   }else
+   }
+   else
    {
-      dist1 = checkDistance(0,currentI+1,currentJ,charPosition);
-      dist2 = checkDistance(0,currentI-1,currentJ,charPosition);
-      dist3 = checkDistance(0,currentI,currentJ+1,charPosition);
-      dist4 = checkDistance(0,currentI,currentJ-1,charPosition);
-      smallD = min(min(dist1,dist2),min(dist3,dist4));
-      int moves[2] = {};
-      if(dist1 == smallD) {
-         moves[0] = 1;
+      if((charPosition[0][1] - charPosition[1][1]) != 0)
+         moveDirection[0] = (charPosition[0][1] - charPosition[1][1])/sqrt(pow((charPosition[0][1] - charPosition[1][1]),2));
+      if((charPosition[0][2] - charPosition[1][2]) != 0)
+         moveDirection[1] = (charPosition[0][2] - charPosition[1][2])/sqrt(pow((charPosition[0][2] - charPosition[1][2]),2));
+      for(int i = 0; i < 2; i++)
+         moves[i] = moveDirection[i];
+      if(abs(charPosition[0][1] - charPosition[1][1]) >= abs(charPosition[0][2] - charPosition[1][2])) {
+         if(map[currentI + moves[0]][currentJ] == '.' && moves[0] != 0)
+            row += moves[0];
+         else if(map[currentI][currentJ + moves[1]] == '.' && moves[1] != 0)
+            column += moves[1];
       }
-      else if(dist2 == smallD) {
-         moves[0] = -1;
+      else if(moves[0] != 0 || moves[1] != 0) {
+         if(map[currentI][currentJ + moves[1]] == '.' && moves[1] != 0)
+            column += moves[1];
+         else if(map[currentI + moves[0]][currentJ] == '.' && moves[0] != 0)
+            row += moves[0];
       }
-      else if(dist3 == smallD) {
-         moves[1] = 1;
-      }
-      else {
-         moves[1] = -1;
-      }
-      if(map[currentI + moves[0]][currentJ + moves [1]] != '#'){
-         row = currentI + moves[0];
-         column = currentJ + moves [1];
+      if (row == currentI && column == currentJ) {
+         if(currentI < centre[0] && charPosition[0][1] < centre[0] && map[currentI-1][currentJ] == '.')
+            row--;
+         else if(currentI > centre[0] && charPosition[0][1] > centre[0] && map[currentI+1][currentJ] == '.')
+            row++;
+         else if(currentJ < centre[1] && charPosition[0][2] < centre[1] && map[currentI][currentJ-1] == '.')
+            column--;
+         else if(currentJ > centre[1] && charPosition[0][2] > centre[1] && map[currentI][currentJ+1] == '.')
+            column++;
       }
    }
    map[currentI][currentJ] = '.';
@@ -224,12 +231,4 @@ int checkDistance(int char1,int char2Row,int char2Column,int charPosition[][3])
 {
    int char1Row = charPosition[char1][1], char1Column = charPosition[char1][2];
    return sqrt(pow((char1Row - char2Row),2) + pow((char1Column-char2Column),2));
-}
-//Returns the minimum of two numbers
-int min(int d1,int d2)
-{
-   if(d1<d2)
-      return d1;
-   else
-      return d2;
 }

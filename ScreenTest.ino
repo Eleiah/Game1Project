@@ -11,25 +11,28 @@
 class CHARACTER
 {
   public:
-  LED(int type,int posX,int posY,int cDirection,int room,int health,bool cStaus);
-  int _health;
-  int _posX;
-  int _posY;
-  int _room;
-  bool _cStatus;
+  CHARACTER(int type,int posX,int posY,int cDirection,int room,int health,bool cStaus);
+  int health;
+  int posX;
+  int posY;
+  int cDirection;
+  int room;
+  bool cStatus;
   
   private:
   int _type;
 };
 
-CHARACTER::CHARACTER(int type,int posX,int posY,int room,int health,bool cStaus)
+CHARACTER::CHARACTER(int type,int _posX,int _posY,int _cDirection,int _room,int _health,bool _cStatus)
 {
   _type = type;
-  _posX = posX;
-  _posY = posY;
-  _room = room;
-  _health = health;
-  _cStatus = cStatus;
+  posX = _posX;
+  posY = _posY;
+  cDirection = _cDirection;
+  room = _room;
+  health = _health;
+  cStatus = _cStatus;
+  
 }
 
 #define _sclk 52
@@ -39,16 +42,27 @@ CHARACTER::CHARACTER(int type,int posX,int posY,int room,int health,bool cStaus)
 #define _dc 40
 #define _rst 45
 
-int movement = 1;
 int spacing = 16;
 int wMap[3][3][15][15] = {};
 int inputPin = 22;
+bool dPad[4];
+CHARACTER HERO(0,7,7,1,0,3,1);
 
 Adafruit_ILI9340 tft = Adafruit_ILI9340(_cs, _dc, _mosi, _sclk, _rst, _miso);
+
 void setup() 
 {
 
-  pinMode(inputPin, INPUT);
+  pinMode(22, INPUT);
+  pinMode(23, INPUT);
+  pinMode(24, INPUT);
+  pinMode(25, INPUT);
+  pinMode(26, INPUT);
+  digitalWrite(22, HIGH);
+  digitalWrite(23, HIGH);
+  digitalWrite(24, HIGH);
+  digitalWrite(25, HIGH);
+  digitalWrite(26, HIGH);
   
   Serial.begin(9600);
   while (!Serial);
@@ -61,45 +75,51 @@ void setup()
 }
 void loop() 
 {
-  static int charPosition[20/*Number of in game characters*/][4/*Character type, alive or dead,x pos,y pos*/];
-  faceDirection(charPosition);
+  faceDirection();
   //Inventory
-  //If(attack or move)- Method
-  deleteChunck(movement,movement);
-  drawHero(movement,movement,0);
-  delay(200);
-  deleteChunck(movement,movement);
-  drawHero(movement,movement,1);
-  delay(200);
-  deleteChunck(movement,movement);
-  drawHero(movement,movement,2);
-  delay(200);
-  deleteChunck(movement,movement);
-  drawHero(movement,movement,3);
-  delay(200);
-  if(digitalRead(inputPin))
+  if(!digitalRead(26))
   {
-    deleteChunck(movement,movement);
-    movement++;
+    heroMove();
   }
+  //If(attack or move)- Method
+  
 }
 
-void faceDirection(int charPosition[][4])
+void heroMove()
 {
-  int dPad[4] = {};
-  dPad[0] = 0; //Button input
-  dPad[1] = 0; //Button input
-  dPad[2] = 0; //Button input
-  dPad[3] = 0; //Button input
-  for(int i = 0;i<4;i++)
+  deleteChunck(HERO.posX,HERO.posY);
+  if(HERO.cDirection == 0)
   {
-    if(dPad[i] == 1)
-    {
-      drawHero(charPosition[0][2],charPosition[0][3],i);
-      //directionFacing = i;
-    }
+    drawHero(HERO.posX-1,HERO.posY,HERO.cDirection);
+    HERO.posX--;
+  }else if(HERO.cDirection == 1)
+  {
+    drawHero(HERO.posX,HERO.posY-1,HERO.cDirection);
+    HERO.posY--;
+  }else if(HERO.cDirection == 2)
+  {
+    drawHero(HERO.posX+1,HERO.posY,HERO.cDirection);
+    HERO.posX++;
+  }else
+  {
+    drawHero(HERO.posX,HERO.posY+1,HERO.cDirection);
+    HERO.posY++;
   }
   
+}
+
+void faceDirection()
+{
+  for(int i = 0;i<4;i++)
+  {
+    dPad[i] = digitalRead(22+i);
+    if(!dPad[i] && HERO.cDirection !=i)
+    {
+      deleteChunck(HERO.posX,HERO.posY);
+      drawHero(HERO.posX,HERO.posY,i);
+      HERO.cDirection = i;
+    }
+  }
 }
 
 

@@ -80,8 +80,9 @@ void loop()
   if(!digitalRead(26))
   {
     heroMove();
+    delay(500);
   }
-  //If(attack or move)- Method
+  //If(attack)- Method
   
 }
 

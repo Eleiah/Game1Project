@@ -19,24 +19,173 @@ class CHARACTER
   int posX;
   int posY;
   int cDirection;
-  int room;
+  int row;
+  int col;
   bool cStatus;
   int type;
-  void properties(int _type,int _posX,int _posY,int _cDirection,int _room,int _health,bool _cStatus)
+  void properties(int _type,int _posX,int _posY,int _cDirection,int _row,int _col,int _health,bool _cStatus)
   {
     type = _type;
     posX = _posX;
     posY = _posY;
     cDirection = _cDirection;
-    room = _room;
+    row = _row;
+    col = _col;
     health = _health;
     cStatus = _cStatus;
   }
 };
 
+int wMap[3][3][15][15] = {{{{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, //L Room 3
+                            {1,7,7,7,7,7,7,7,7,7,7,7,7,7,1},
+                            {1,7,7,7,7,0,0,0,0,0,0,7,7,7,1},
+                            {1,7,7,0,0,0,0,0,0,0,0,0,7,7,1},
+                            {1,7,0,0,0,0,0,0,0,0,0,0,7,7,1},
+                            {1,7,0,0,0,0,0,0,0,0,0,0,7,7,1},
+                            {1,7,0,0,0,0,0,0,0,0,0,0,0,7,1},
+                            {1,7,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                            {1,7,0,0,0,0,0,0,0,0,0,0,0,7,1},
+                            {1,7,0,0,0,0,0,0,0,0,0,0,7,7,1},
+                            {1,7,0,0,0,0,0,0,0,0,0,0,7,7,1},
+                            {1,7,7,0,0,0,0,0,0,0,0,0,7,7,1},
+                            {1,7,7,7,7,0,0,0,0,0,0,7,7,7,1},
+                            {1,7,7,7,7,7,7,7,7,7,7,7,7,7,1},
+                            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}},
+                         
+                           {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, //T Room 3
+                            {1,5,5,5,5,5,5,5,5,5,5,5,5,5,1},
+                            {1,5,0,0,0,0,0,0,0,0,0,0,0,5,1},
+                            {1,5,0,0,0,0,0,0,0,0,0,0,0,5,1},
+                            {1,5,0,0,0,5,5,0,0,5,5,0,0,5,1},
+                            {1,5,0,0,0,5,5,0,0,5,5,0,0,5,1},
+                            {1,5,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                            {1,5,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                            {1,5,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                            {1,5,0,0,0,5,5,0,0,5,5,0,0,5,1},
+                            {1,5,0,0,0,5,5,0,0,5,5,0,0,5,1},
+                            {1,5,0,0,0,0,0,0,0,0,0,0,0,5,1},
+                            {1,5,0,0,0,0,0,0,0,0,0,0,0,5,1},
+                            {1,5,5,5,5,5,5,5,5,5,5,5,5,5,1},
+                            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}},
+                            
+                           {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, //D Room 3
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,6,0,6,0,0,0,0,0,6,0,6,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,1,6,0,6,2,0,0,0,0,1},
+                            {1,0,0,0,1,1,0,0,0,2,2,0,0,0,1},
+                            {1,0,0,1,1,1,0,0,0,2,2,2,0,0,1},
+                            {1,0,0,1,1,1,0,0,6,2,2,2,0,0,0},
+                            {1,0,0,1,1,1,0,0,0,2,2,2,0,0,1},
+                            {1,0,0,0,1,1,0,0,0,2,2,0,0,0,1},
+                            {1,0,0,0,0,1,6,0,6,2,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,6,0,6,0,0,0,0,0,6,0,6,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}}},
+
+                          {{{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, //L Room 2
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,7,7,7,7,7,7,7,0,0,1},
+                            {1,0,0,0,0,0,7,7,7,7,7,7,7,0,1},
+                            {1,0,0,7,7,0,0,7,1,7,7,7,7,0,1},
+                            {1,0,7,7,7,7,0,0,1,1,7,7,7,0,1},
+                            {1,7,7,7,7,7,1,0,0,1,0,7,7,0,1},
+                            {0,0,0,0,0,0,0,0,0,1,0,9,9,0,0},
+                            {1,7,7,7,7,7,1,0,0,1,0,7,7,0,1},
+                            {1,0,7,7,7,7,0,0,1,1,7,7,7,0,1},
+                            {1,0,0,7,7,0,0,7,1,7,7,7,7,0,1},
+                            {1,0,0,0,0,0,7,7,7,7,7,7,7,0,1},
+                            {1,0,0,0,0,7,7,7,7,7,7,7,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}},
+                            
+                           {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, //T Room 2
+                            {1,8,8,8,8,8,8,8,8,8,8,8,8,8,1},
+                            {1,8,8,8,8,8,8,8,8,8,8,8,8,8,1},
+                            {1,8,8,8,8,8,8,8,8,8,8,8,8,8,1},
+                            {1,9,9,8,8,8,8,8,8,8,8,8,8,8,1},
+                            {1,9,9,9,8,8,8,8,8,8,8,8,8,8,1},
+                            {1,9,9,9,9,9,9,9,9,9,9,9,9,9,1},
+                            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                            {1,9,9,9,9,9,9,9,9,9,9,9,9,9,1},
+                            {1,9,9,9,8,8,8,8,8,8,8,8,8,8,1},
+                            {1,9,9,8,8,8,8,8,8,8,8,8,8,8,1},
+                            {1,8,8,8,8,8,8,8,8,8,8,8,8,8,1},
+                            {1,8,8,8,8,8,8,8,8,8,8,8,8,8,1},
+                            {1,8,8,8,8,8,8,8,8,8,8,8,8,8,1},
+                            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}},
+
+                           {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, //D Room 2
+                            {1,0,0,3,3,3,3,3,3,3,3,3,0,0,1},
+                            {1,0,0,0,3,3,3,3,3,3,3,0,0,0,1},
+                            {1,0,0,0,0,3,3,3,3,3,0,0,0,0,1},
+                            {1,0,6,0,0,0,3,3,3,0,0,0,6,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {0,0,0,0,0,0,6,0,6,0,0,0,0,0,0},
+                            {1,0,0,0,2,0,0,0,0,0,2,0,0,0,1},
+                            {1,0,0,2,2,2,0,0,0,2,2,2,0,0,1},
+                            {1,0,0,0,2,0,0,0,0,0,2,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,6,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}}},
+
+                          {{{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, //L Room 1
+                            {1,7,7,7,0,0,0,0,0,0,0,7,7,7,1},
+                            {1,7,7,0,0,0,0,0,0,0,0,0,7,7,1},
+                            {1,7,0,0,0,0,0,0,0,0,0,0,0,7,1},
+                            {1,0,0,0,1,0,0,0,0,0,1,0,0,0,1},
+                            {1,0,0,0,0,0,0,1,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,7,7,7,0,0,0,0,0,1},
+                            {0,0,0,0,0,1,7,7,7,1,0,0,0,0,1},
+                            {1,0,0,0,0,0,7,7,7,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,1,0,0,0,0,0,0,1},
+                            {1,0,0,0,1,0,0,0,0,0,1,0,0,0,1},
+                            {1,7,0,0,0,0,0,0,0,0,0,0,0,7,1},
+                            {1,7,7,0,0,0,0,0,0,0,0,0,7,7,1},
+                            {1,7,7,7,0,0,0,0,0,0,0,7,7,7,1},
+                            {1,1,1,1,1,1,1,0,1,1,1,1,1,1,1}},
+
+                           {{1,1,1,1,1,1,1,0,1,1,1,1,1,1,1}, //T Room 1
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,1,1,1,1,1,1,0,1,1,1,1,1,1,1}},
+
+                           {{1,1,1,1,1,1,1,0,1,1,1,1,1,1,1}, //D Room1
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,6,0,0,0,0,0,0,0,6,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,1,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,1,1,1,0,0,0,0,0,1},
+                            {0,0,0,6,0,1,1,1,1,1,0,6,0,0,1},
+                            {1,0,0,0,0,0,1,1,1,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,1,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,6,0,0,0,0,0,0,0,6,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}}}};
+
+
+
+                            
+                            
 //Spacing sets the size of each block, 16x16 pixels
 int spacing = 16;
-int wMap[3][3][15][15] = {};
 bool dPad[4];
 int centre[2] = {7, 7};
 int origin = 3;
@@ -47,14 +196,16 @@ bool moveState = digitalRead(26);
 bool lastMoveState = digitalRead(26);
 bool attackState = digitalRead(27);
 bool lastAttackState = digitalRead(27);
+int wRow = 2;
+int wCol = 1;
 
 void setup() {
   //Character 0 is the Hero
-  Characters[0].properties(0,2,2,3,0,3,1);
+  Characters[0].properties(0,2,2,3,2,1,3,1);
   //All other characters are enemies
-  Characters[1].properties(1,13,13,0,0,3,1);
-  Characters[2].properties(1,13,2,0,0,3,1);
-  Characters[3].properties(1,2,13,0,0,3,1);
+  Characters[1].properties(1,13,13,0,2,1,3,1);
+  Characters[2].properties(1,13,2,0,2,1,3,1);
+  Characters[3].properties(1,2,13,0,2,1,3,1);
   //Initialize pins for Dpad and buttons
   for(int i = 22;i<28;i++){
     pinMode(i, INPUT);
@@ -65,7 +216,7 @@ void setup() {
   //Set the screen to landscape and clear it
   tft.setRotation(3);
   tft.fillScreen(ILI9340_BLACK);
-  initializeMap();
+  //initializeMap();
   drawMap();
 }
 
@@ -96,45 +247,37 @@ void loop() {
     lastAttackState = attackState;
   }
 }
-void drawMapMiddle(){
-  int poop[15][15]= {{1,1,1,1,1,1,0,1,1,1,1,1,1,1,1},
-                    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                    {1,1,1,1,1,1,1,0,1,1,1,1,1,1,1}};
-}
 //Place the character after a map change
 void placeChar() {
   //Remove Hero from current spot
   deleteChunk(Characters[0].posX,Characters[0].posY);
-  wMap[0][0][Characters[0].posX][Characters[0].posY] = 0;
+  wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = 0;
   //Check where he should be placed
    switch(Characters[0].cDirection) {
-      case 0: Characters[0].posX = 14;
+      case 0: Characters[0].posX = 13;
          Characters[0].posY = 7;
+         wCol--;
+         Characters[0].col--;
          break;
       case 1: Characters[0].posX = 7;
-         Characters[0].posY = 14;
+         Characters[0].posY = 13;
+         wRow--;
+         Characters[0].row--;
          break;
-      case 2: Characters[0].posX = 0;
+      case 2: Characters[0].posX = 1;
          Characters[0].posY = 7;
+         wCol++;
+         Characters[0].col++;
          break;
       case 3: Characters[0].posX = 7;
-         Characters[0].posY = 0;
+         Characters[0].posY = 1;
+         wRow++;
+         Characters[0].row++;
          break;
    }
+   drawMap();
    //Place the Hero on the map
-   wMap[0][0][Characters[0].posX][Characters[0].posY] = 2;
+   wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = 2;
    //Draw the hero
    drawHero(Characters[0].posX,Characters[0].posY);
 }
@@ -153,9 +296,9 @@ void heroMove() {
   else {
     newPos[1] = 1;
   }
-  if(wMap[0][0][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] == 0) {
-      wMap[0][0][Characters[0].posX][Characters[0].posY] = 0;
-      wMap[0][0][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] = 2;
+  if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] == 0) {
+      wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = 0;
+      wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] = 2;
       deleteChunk(Characters[0].posX,Characters[0].posY);
       Characters[0].posX = Characters[0].posX + newPos[0];
       Characters[0].posY = Characters[0].posY + newPos[1];
@@ -176,19 +319,19 @@ void heroAttack(){
     attacks[0] = 1;
   else
     attacks[1] = 1;
-  if(wMap[0][0][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] >= 100){
-    int currentEnemy = wMap[0][0][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]]-100;
+  if(wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] >= 100){
+    int currentEnemy = wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]]-100;
     Characters[currentEnemy].health--;
     if(Characters[currentEnemy].health <= 0){
       Characters[currentEnemy].cStatus = 0;
-      wMap[0][0][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] = 0;
+      wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] = 0;
       deleteChunk(Characters[currentEnemy].posX,Characters[currentEnemy].posY);
     }
   }
 }
 void enemiesMove(){
   for(int i = 1;i<4;i++){
-    if(Characters[i].cStatus == 1 && Characters[i].room == Characters[0].room)
+    if(Characters[i].cStatus == 1 && (Characters[i].col == Characters[0].col && Characters[i].row == Characters[0].row))
       enemyMove(i);
   }
 }
@@ -208,7 +351,7 @@ void enemyMove(int i) {
             row = Characters[i].posX;
             column = Characters[i].posY + (rand()%3 - 1);
          }
-      }while(wMap[0][0][row][column] == 1);
+      }while(wMap[wRow][wCol][row][column] == 1);
    }
    else if(charDistance(Characters[i].posX, Characters[i].posY) == 1) {
       //Attack!
@@ -221,31 +364,31 @@ void enemyMove(int i) {
       for(int i = 0; i < 2; i++)
          moves[i] = moveDirection[i];
       if(abs(Characters[0].posX - Characters[i].posX) >= abs(Characters[0].posY - Characters[i].posY)) {
-         if(wMap[0][0][Characters[i].posX + moves[0]][Characters[i].posY] == 0 && moves[0] != 0)
+         if(wMap[wRow][wCol][Characters[i].posX + moves[0]][Characters[i].posY] == 0 && moves[0] != 0)
             row += moves[0];
-         else if(wMap[0][0][Characters[i].posX][Characters[i].posY + moves[1]] == 0 && moves[1] != 0)
+         else if(wMap[wRow][wCol][Characters[i].posX][Characters[i].posY + moves[1]] == 0 && moves[1] != 0)
             column += moves[1];
       }
       else if(moves[0] != 0 || moves[1] != 0) {
-         if(wMap[0][0][Characters[i].posX][Characters[i].posY + moves[1]] == 0 && moves[1] != 0)
+         if(wMap[wRow][wCol][Characters[i].posX][Characters[i].posY + moves[1]] == 0 && moves[1] != 0)
             column += moves[1];
-         else if(wMap[0][0][Characters[i].posX + moves[0]][Characters[i].posY] == 0 && moves[0] != 0)
+         else if(wMap[wRow][wCol][Characters[i].posX + moves[0]][Characters[i].posY] == 0 && moves[0] != 0)
             row += moves[0];
       }
       if (row == Characters[i].posX && column == Characters[i].posY) {
-         if(Characters[i].posX < centre[0] && Characters[0].posX < centre[0] && wMap[0][0][Characters[i].posX-1][Characters[i].posY] == 0)
+         if(Characters[i].posX < centre[0] && Characters[0].posX < centre[0] && wMap[wRow][wCol][Characters[i].posX-1][Characters[i].posY] == 0)
             row--;
-         else if(Characters[i].posX > centre[0] && Characters[0].posX > centre[0] && wMap[0][0][Characters[i].posX+1][Characters[i].posY] == 0)
+         else if(Characters[i].posX > centre[0] && Characters[0].posX > centre[0] && wMap[wRow][wCol][Characters[i].posX+1][Characters[i].posY] == 0)
             row++;
-         else if(Characters[i].posY < centre[1] && Characters[0].posY < centre[1] && wMap[0][0][Characters[i].posX][Characters[i].posY-1] == 0)
+         else if(Characters[i].posY < centre[1] && Characters[0].posY < centre[1] && wMap[wRow][wCol][Characters[i].posX][Characters[i].posY-1] == 0)
             column--;
-         else if(Characters[i].posY > centre[1] && Characters[0].posY > centre[1] && wMap[0][0][Characters[i].posX][Characters[i].posY+1] == 0)
+         else if(Characters[i].posY > centre[1] && Characters[0].posY > centre[1] && wMap[wRow][wCol][Characters[i].posX][Characters[i].posY+1] == 0)
             column++;
       }
    }
    deleteChunk(Characters[i].posX, Characters[i].posY);
-   wMap[0][0][Characters[i].posX][Characters[i].posY] = 0;
-   wMap[0][0][row][column] = 100+i;
+   wMap[wRow][wCol][Characters[i].posX][Characters[i].posY] = 0;
+   wMap[wRow][wCol][row][column] = 100+i;
    Characters[i].posX = row;
    Characters[i].posY = column;
    drawEnemy(i);
@@ -273,69 +416,42 @@ void deleteChunk(int x,int y) {
   tft.fillRect(x*spacing,y*spacing,16,16,ILI9340_BLACK);
 }
 
-void initializeMap() {
-  for(int i = 0; i < 15; i++) {
-    wMap[0][0][0][i] = 1;
-    wMap[0][0][14][i] = 1;
-    wMap[0][0][i][0] = 1;
-    wMap[0][0][i][14] = 1;
-  }
-  wMap[0][0][0][7] = 0;
-  wMap[0][0][14][7] = 0;
-  wMap[0][0][7][0] = 0;
-  wMap[0][0][7][14] = 0;
-  for(int i = 5; i < 10; i++) {
-      wMap[0][0][i][7] = 1;
-      wMap[0][0][7][i] = 1;
-   }
-   wMap[0][0][6][6] = 1;
-   wMap[0][0][6][8] = 1;
-   wMap[0][0][8][6] = 1;
-   wMap[0][0][8][8] = 1;
-   wMap[0][0][4][4] = 1;
-   wMap[0][0][4][10] = 1;
-   wMap[0][0][10][4] = 1;
-   wMap[0][0][10][10] = 1;
-}
-
 void drawMap() {
+  tft.fillScreen(ILI9340_BLACK);
   for(int i = 0;i<15;i++) {
     for(int j = 0;j<15;j++) {
-      drawTile(i*spacing,j*spacing,wMap[0][0][i][j]);
+      drawTile(i*spacing,j*spacing,wMap[wRow][wCol][i][j]);
     }
   }
 }
 
 void drawTile(int xPos,int yPos,int tileType) {
-  if(tileType == 1) {
-    tft.fillRect(xPos,yPos,spacing,spacing,0x8430);//Darker
-    tft.fillRect(xPos+1,yPos+1,4,4,0xAD55);//Lighter
-    tft.fillRect(xPos+7,yPos+1,3,3,0xAD55);
-    tft.fillRect(xPos+12,yPos+1,3,3,0xAD55);
-    tft.fillRect(xPos+1,yPos+7,6,3,0xAD55);
-    tft.fillRect(xPos+9,yPos+6,6,3,0xAD55);
-    tft.fillRect(xPos+1,yPos+12,8,3,0xAD55);
-    tft.fillRect(xPos+11,yPos+11,4,4,0xAD55);
+  if(tileType >= 1 && tileType <= 7) {
+    tft.fillRect(xPos,yPos,spacing,spacing,0x5AEB);//Darker
+    tft.fillRect(xPos+1,yPos+1,4,4,0x8430);//Lighter
+    tft.fillRect(xPos+7,yPos+1,3,3,0x8430);
+    tft.fillRect(xPos+12,yPos+1,3,3,0x8430);
+    tft.fillRect(xPos+1,yPos+7,6,3,0x8430);
+    tft.fillRect(xPos+9,yPos+6,6,3,0x8430);
+    tft.fillRect(xPos+1,yPos+12,8,3,0x8430);
+    tft.fillRect(xPos+11,yPos+11,4,4,0x8430);
   }
   if(tileType == 4) {
     //draw a door
   }
   //Lava
   if(tileType == 8){
-    //0x6B6D Darkest
-    //0xFD42 Dark
-    //0xFB40 Light
-    tft.fillRect(xPos,yPos,16,16,0x6B6D);
-    tft.fillRect(xPos,yPos,2,4,0xFD42);
-    tft.fillRect(xPos+4,yPos,8,2,0xFD42);
-    tft.fillRect(xPos+6,yPos+2,4,2,0xFD42);
-    tft.fillRect(xPos+2,yPos+4,4,8,0xFD42);
-    tft.fillRect(xPos,yPos+6,8,4,0xFD42);
-    tft.fillRect(xPos+10,yPos+4,4,4,0xFD42);
-    tft.fillRect(xPos+14,yPos,2,4,0xFD42);
-    tft.fillRect(xPos+12,yPos+10,4,4,0xFD42);
-    tft.fillRect(xPos+6,yPos+12,4,2,0xFD42);
-    tft.fillRect(xPos+4,yPos+14,8,2,0xFD42);
+    tft.fillRect(xPos,yPos,16,16,0xFD42);
+    tft.fillRect(xPos,yPos,2,4,0xFB40);
+    tft.fillRect(xPos+4,yPos,8,2,0xFB40);
+    tft.fillRect(xPos+6,yPos+2,4,2,0xFB40);
+    tft.fillRect(xPos+2,yPos+4,4,8,0xFB40);
+    tft.fillRect(xPos,yPos+6,8,4,0xFB40);
+    tft.fillRect(xPos+10,yPos+4,4,4,0xFB40);
+    tft.fillRect(xPos+14,yPos,2,4,0xFB40);
+    tft.fillRect(xPos+12,yPos+10,4,4,0xFB40);
+    tft.fillRect(xPos+6,yPos+12,4,2,0xFB40);
+    tft.fillRect(xPos+4,yPos+14,8,2,0xFB40);
   }
   //Wood Planks
   if(tileType == 9){
@@ -360,7 +476,23 @@ void drawTile(int xPos,int yPos,int tileType) {
 }
 
 void drawEnemy(int i){
+  int x = Characters[i].posX;
+  int y = Characters[i].posY;
+  int colour;
+  if(Characters[i].type == 1 || Characters[i].type == 2){
+    colour = 0x3C00;
+  }
+  else{
+    colour = 0xA020;
+  }
   tft.fillRect(Characters[i].posX*spacing,Characters[i].posY*spacing,16,16,ILI9340_MAGENTA);
+  if(Characters[i].type == 1){
+    //Enemy Horns
+    tft.drawFastVLine(x*spacing,y*spacing,3,ILI9340_WHITE);
+    tft.drawFastVLine(x*spacing+1,y*spacing+1,3,ILI9340_WHITE);
+    tft.drawFastVLine(x*spacing+2,y*spacing+1,1,ILI9340_WHITE);
+    //Enemy Body
+  }
 }
 
 void drawHero(int x,int y) {

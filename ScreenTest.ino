@@ -1,6 +1,11 @@
 #include "SPI.h"
 #include "Adafruit_GFX.h"
-#include "Adafruit_ILI9340.h"
+#include "Adafruit_ILI9341.h"
+
+#if defined(__SAM3X8E__)
+    #undef __FlashStringHelper::F(string_literal)
+    #define F(string_literal) string_literal
+#endif
 
 #define _sclk 52
 #define _miso 50
@@ -9,9 +14,9 @@
 #define _dc 40
 #define _rst 45
 
-Adafruit_ILI9340 tft = Adafruit_ILI9340(_cs, _dc, _mosi, _sclk, _rst, _miso);
+Adafruit_ILI9341 tft = Adafruit_ILI9341(_cs, _dc, _mosi, _sclk, _rst, _miso);
 
-//Character objects for Hero and Enemies
+//Character class for Hero and Enemies
 class CHARACTER
 {
   public:
@@ -24,8 +29,7 @@ class CHARACTER
   bool cStatus;
   int type;
   int cTile;
-  void properties(int _type,int _posX,int _posY,int _cDirection,int _row,int _col,int _health,bool _cStatus,int _cTile)
-  {
+  void properties(int _type,int _posX,int _posY,int _cDirection,int _row,int _col,int _health,bool _cStatus,int _cTile) {
     type = _type;
     posX = _posX;
     posY = _posY;
@@ -38,150 +42,168 @@ class CHARACTER
   }
 };
 
-int wMap[3][3][15][15] = {{{{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, //L Room 3
-                            {1,7,7,7,7,7,7,7,7,7,7,7,7,7,1},
-                            {1,7,7,7,7,0,0,0,0,0,0,7,7,7,1},
-                            {1,7,7,0,0,0,0,0,0,0,0,0,7,7,1},
-                            {1,7,0,0,0,0,0,0,0,0,0,0,7,7,1},
-                            {1,7,0,0,0,0,0,0,0,0,0,0,7,7,1},
-                            {1,7,0,0,0,0,0,0,0,0,0,0,0,7,1},
-                            {1,7,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                            {1,7,0,0,0,0,0,0,0,0,0,0,0,7,1},
-                            {1,7,0,0,0,0,0,0,0,0,0,0,7,7,1},
-                            {1,7,0,0,0,0,0,0,0,0,0,0,7,7,1},
-                            {1,7,7,0,0,0,0,0,0,0,0,0,7,7,1},
-                            {1,7,7,7,7,0,0,0,0,0,0,7,7,7,1},
-                            {1,7,7,7,7,7,7,7,7,7,7,7,7,7,1},
-                            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}},
+// Room class
+class ROOM
+{
+  public:
+  int enemies;
+  int centres[4][2];
+  void properties(int _enemies,int _centre1X,int _centre1Y,int _centre2X,int _centre2Y,int _centre3X,int _centre3Y,int _centre4X,int _centre4Y) {
+    enemies = _enemies;
+    centres[0][0] = _centre1X;
+    centres[0][1] = _centre1Y;
+    centres[1][0] = _centre2X;
+    centres[1][0] = _centre2Y;
+    centres[2][0] = _centre3X;
+    centres[2][0] = _centre3Y;
+    centres[3][0] = _centre4X;
+    centres[3][0] = _centre4Y;
+  }
+};
+
+int wMap[3][3][15][15] = {{{{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //L Room 3
+                            {10,14,14,14,14,14,14,14,14,14,14,14,14,14,10},
+                            {10,14,14,14,14,0,0,0,0,0,0,14,14,14,10},
+                            {10,14,14,0,0,0,0,0,0,0,0,0,14,14,10},
+                            {10,14,0,0,0,0,0,0,0,0,0,0,14,14,10},
+                            {10,14,0,0,0,0,0,0,0,0,0,0,14,14,10},
+                            {10,14,0,0,0,0,0,0,0,0,0,0,0,14,10},
+                            {10,14,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                            {10,14,0,0,0,0,0,0,0,0,0,0,0,14,10},
+                            {10,14,0,0,0,0,0,0,0,0,0,0,14,14,10},
+                            {10,14,0,0,0,0,0,0,0,0,0,0,14,14,10},
+                            {10,14,14,0,0,0,0,0,0,0,0,0,14,14,10},
+                            {10,14,14,14,14,0,0,0,0,0,0,14,14,14,10},
+                            {10,14,14,14,14,14,14,14,14,14,14,14,14,14,10},
+                            {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}},
                          
-                           {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, //T Room 3
-                            {1,5,5,5,5,5,5,5,5,5,5,5,5,5,1},
-                            {1,5,0,0,0,0,0,0,0,0,0,0,0,5,1},
-                            {1,5,0,0,0,0,0,0,0,0,0,0,0,5,1},
-                            {1,5,0,0,0,5,5,0,0,5,5,0,0,5,1},
-                            {1,5,0,0,0,5,5,0,0,5,5,0,0,5,1},
-                            {1,60,63,66,0,0,0,0,0,0,0,0,0,0,0},
-                            {1,61,64,67,0,0,0,0,0,0,0,0,0,0,0},
-                            {1,62,65,68,0,0,0,0,0,0,0,0,0,0,0},
-                            {1,5,0,0,0,5,5,0,0,5,5,0,0,5,1},
-                            {1,5,0,0,0,5,5,0,0,5,5,0,0,5,1},
-                            {1,5,0,0,0,0,0,0,0,0,0,0,0,5,1},
-                            {1,5,0,0,0,0,0,0,0,0,0,0,0,5,1},
-                            {1,5,5,5,5,5,5,5,5,5,5,5,5,5,1},
-                            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}},
+                           {{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //T Room 3
+                            {10,5,5,5,5,5,5,5,5,5,5,5,5,5,10},
+                            {10,5,0,0,0,0,0,0,0,0,0,0,0,5,10},
+                            {10,5,0,0,0,0,0,0,0,0,0,0,0,5,10},
+                            {10,5,0,0,0,5,5,0,0,5,5,0,0,5,10},
+                            {10,5,0,0,0,5,5,0,0,5,5,0,0,5,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                            {10,5,0,0,0,5,5,0,0,5,5,0,0,5,10},
+                            {10,5,0,0,0,5,5,0,0,5,5,0,0,5,10},
+                            {10,5,0,0,0,0,0,0,0,0,0,0,0,5,10},
+                            {10,5,0,0,0,0,0,0,0,0,0,0,0,5,10},
+                            {10,5,5,5,5,5,5,5,5,5,5,5,5,5,10},
+                            {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}},
                             
-                           {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, //D Room 3
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,6,0,6,0,0,0,0,0,6,0,6,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,1,6,0,6,2,0,0,0,0,1},
-                            {1,0,0,0,1,1,0,0,0,2,2,0,0,0,1},
-                            {1,0,0,1,1,1,0,0,0,2,2,2,0,0,1},
-                            {1,0,0,1,1,1,0,0,6,2,2,2,0,0,0},
-                            {1,0,0,1,1,1,0,0,0,2,2,2,0,0,1},
-                            {1,0,0,0,1,1,0,0,0,2,2,0,0,0,1},
-                            {1,0,0,0,0,1,6,0,6,2,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,6,0,6,0,0,0,0,0,6,0,6,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}}},
+                           {{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //D Room 3
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,3,0,3,0,0,0,0,0,3,0,3,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,10,3,0,3,11,0,0,0,0,10},
+                            {10,0,0,0,10,10,0,0,0,11,11,0,0,0,10},
+                            {10,0,0,10,10,10,0,0,0,11,11,11,0,0,10},
+                            {10,0,0,10,10,10,0,0,3,11,11,11,0,0,0},
+                            {10,0,0,10,10,10,0,0,0,11,11,11,0,0,10},
+                            {10,0,0,0,10,10,0,0,0,11,11,0,0,0,10},
+                            {10,0,0,0,0,10,3,0,3,11,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,3,0,3,0,0,0,0,0,3,0,3,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}}},
 
-                          {{{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, //L Room 2
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,7,7,7,7,7,7,7,0,0,1},
-                            {1,0,0,0,0,0,7,7,7,7,7,7,7,0,1},
-                            {1,0,0,7,7,0,0,7,1,7,7,7,7,0,1},
-                            {1,0,7,7,7,7,0,0,1,1,7,7,7,0,1},
-                            {1,7,7,7,7,7,1,0,0,1,0,7,7,0,1},
-                            {0,0,0,0,0,0,0,0,0,1,0,9,9,0,0},
-                            {1,7,7,7,7,7,1,0,0,1,0,7,7,0,1},
-                            {1,0,7,7,7,7,0,0,1,1,7,7,7,0,1},
-                            {1,0,0,7,7,0,0,7,1,7,7,7,7,0,1},
-                            {1,0,0,0,0,0,7,7,7,7,7,7,7,0,1},
-                            {1,0,0,0,0,7,7,7,7,7,7,7,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}},
+                          {{{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //L Room 2
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,14,14,14,14,14,14,14,0,0,10},
+                            {10,0,0,0,0,0,14,14,14,14,14,14,14,0,10},
+                            {10,0,0,14,14,0,0,14,10,14,14,14,14,0,10},
+                            {10,0,14,14,14,14,0,0,10,10,14,14,14,0,10},
+                            {10,14,14,14,14,14,10,0,0,10,0,14,14,0,10},
+                            {0,0,0,0,0,0,0,0,0,10,0,1,1,0,0},
+                            {10,14,14,14,14,14,10,0,0,10,0,14,14,0,10},
+                            {10,0,14,14,14,14,0,0,10,10,14,14,14,0,10},
+                            {10,0,0,14,14,0,0,14,10,14,14,14,14,0,10},
+                            {10,0,0,0,0,0,14,14,14,14,14,14,14,0,10},
+                            {10,0,0,0,0,14,14,14,14,14,14,14,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}},
                             
-                           {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, //T Room 2
-                            {1,8,8,8,8,8,8,8,8,8,8,8,8,8,1},
-                            {1,8,8,8,8,8,8,8,8,8,8,8,8,8,1},
-                            {1,8,8,8,8,8,8,8,8,8,8,8,8,8,1},
-                            {1,9,9,8,8,8,8,8,8,8,8,8,8,8,1},
-                            {1,9,9,9,8,8,8,8,8,8,8,8,8,8,1},
-                            {1,9,9,9,9,9,9,9,9,9,9,9,9,9,1},
+                           {{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //T Room 2
+                            {10,15,15,15,15,15,15,15,15,15,15,15,15,15,10},
+                            {10,15,15,15,15,15,15,15,15,15,15,15,15,15,10},
+                            {10,15,15,15,15,15,15,15,15,15,15,15,15,15,10},
+                            {10,1,1,15,15,15,15,15,15,15,15,15,15,15,10},
+                            {10,1,1,1,15,15,15,15,15,15,15,15,15,15,10},
+                            {10,1,1,1,1,1,1,1,1,1,1,1,1,1,10},
                             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                            {1,9,9,9,9,9,9,9,9,9,9,9,9,9,1},
-                            {1,9,9,9,8,8,8,8,8,8,8,8,8,8,1},
-                            {1,9,9,8,8,8,8,8,8,8,8,8,8,8,1},
-                            {1,8,8,8,8,8,8,8,8,8,8,8,8,8,1},
-                            {1,8,8,8,8,8,8,8,8,8,8,8,8,8,1},
-                            {1,8,8,8,8,8,8,8,8,8,8,8,8,8,1},
-                            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}},
+                            {10,1,1,1,1,1,1,1,1,1,1,1,1,1,10},
+                            {10,1,1,1,15,15,15,15,15,15,15,15,15,15,10},
+                            {10,1,1,15,15,15,15,15,15,15,15,15,15,15,10},
+                            {10,15,15,15,15,15,15,15,15,15,15,15,15,15,10},
+                            {10,15,15,15,15,15,15,15,15,15,15,15,15,15,10},
+                            {10,15,15,15,15,15,15,15,15,15,15,15,15,15,10},
+                            {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}},
 
-                           {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, //D Room 2
-                            {1,0,0,3,3,3,3,3,3,3,3,3,0,0,1},
-                            {1,0,0,0,3,3,3,3,3,3,3,0,0,0,1},
-                            {1,0,0,0,0,3,3,3,3,3,0,0,0,0,1},
-                            {1,0,6,0,0,0,3,3,3,0,0,0,6,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {0,0,0,0,0,0,6,0,6,0,0,0,0,0,0},
-                            {1,0,0,0,2,0,0,0,0,0,2,0,0,0,1},
-                            {1,0,0,2,2,2,0,0,0,2,2,2,0,0,1},
-                            {1,0,0,0,2,0,0,0,0,0,2,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,6,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}}},
+                           {{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //D Room 2
+                            {10,0,0,12,12,12,12,12,12,12,12,12,0,0,10},
+                            {10,0,0,0,12,12,12,12,12,12,12,0,0,0,10},
+                            {10,0,0,0,0,12,12,12,12,12,0,0,0,0,10},
+                            {10,0,3,0,0,0,12,12,12,0,0,0,3,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {0,0,0,0,0,0,3,0,3,0,0,0,0,0,0},
+                            {10,0,0,0,11,0,0,0,0,0,10,0,0,0,10},
+                            {10,0,0,11,11,11,0,0,0,10,10,10,0,0,10},
+                            {10,0,0,0,11,0,0,0,0,0,10,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,3,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}}},
 
-                          {{{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, //L Room 1
-                            {1,7,7,7,0,0,0,0,0,0,0,7,7,7,1},
-                            {1,7,7,0,0,0,0,0,0,0,0,0,7,7,1},
-                            {1,7,0,0,0,0,0,0,0,0,0,0,0,7,1},
-                            {1,0,0,0,1,0,0,0,0,0,1,0,0,0,1},
-                            {1,0,0,0,0,0,0,1,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,7,7,7,0,0,0,0,0,1},
-                            {0,0,0,0,0,1,7,7,7,1,0,0,0,0,1},
-                            {1,0,0,0,0,0,7,7,7,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,1,0,0,0,0,0,0,1},
-                            {1,0,0,0,1,0,0,0,0,0,1,0,0,0,1},
-                            {1,7,0,0,0,0,0,0,0,0,0,0,0,7,1},
-                            {1,7,7,0,0,0,0,0,0,0,0,0,7,7,1},
-                            {1,7,7,7,0,0,0,0,0,0,0,7,7,7,1},
-                            {1,1,1,1,1,1,1,0,1,1,1,1,1,1,1}},
+                          {{{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //L Room 1
+                            {10,14,14,14,0,0,0,0,0,0,0,14,14,14,10},
+                            {10,14,14,0,0,0,0,0,0,0,0,0,14,14,10},
+                            {10,14,0,0,0,0,0,0,0,0,0,0,0,14,10},
+                            {10,0,0,0,10,0,0,0,0,0,10,0,0,0,10},
+                            {10,0,0,0,0,0,0,10,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,14,14,14,0,0,0,0,0,10},
+                            {0,0,0,0,0,10,14,14,14,10,0,0,0,0,10},
+                            {10,0,0,0,0,0,14,14,14,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,10,0,0,0,0,0,0,10},
+                            {10,0,0,0,10,0,0,0,0,0,10,0,0,0,10},
+                            {10,14,0,0,0,0,0,0,0,0,0,0,0,14,10},
+                            {10,14,14,0,0,0,0,0,0,0,0,0,14,14,10},
+                            {10,14,14,14,0,0,0,0,0,0,0,14,14,14,10},
+                            {10,10,10,10,10,10,10,0,10,10,10,10,10,10,10}},
 
-                           {{1,1,1,1,1,1,1,0,1,1,1,1,1,1,1}, //T Room 1
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {0,0,0,0,50,0,0,0,0,0,0,0,0,0,50},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,1,1,1,1,1,1,0,1,1,1,1,1,1,1}},
+                           {{10,10,10,10,10,10,10,0,10,10,10,10,10,10,10}, //T Room 1
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,10,10,10,10,10,10,0,10,10,10,10,10,10,10}},
 
-                           {{1,1,1,1,1,1,1,0,1,1,1,1,1,1,1}, //D Room1
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,6,0,0,0,0,0,0,0,6,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,1,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,1,1,1,0,0,0,0,0,1},
-                            {0,0,0,6,0,1,1,1,1,1,0,6,0,0,1},
-                            {1,0,0,0,0,0,1,1,1,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,1,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,6,0,0,0,0,0,0,0,6,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}}}};
-
+                           {{10,10,10,10,10,10,10,0,10,10,10,10,10,10,10}, //D Room1
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,3,0,0,0,0,0,0,0,3,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,10,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,10,10,10,0,0,0,0,0,10},
+                            {0,0,0,3,0,10,10,10,10,10,0,3,0,0,10},
+                            {10,0,0,0,0,0,10,10,10,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,10,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,3,0,0,0,0,0,0,0,3,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}}}};
 
 
                             
@@ -189,9 +211,10 @@ int wMap[3][3][15][15] = {{{{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}, //L Room 3
 //Spacing sets the size of each block, 16x16 pixels
 int spacing = 16;
 bool dPad[4];
-int centre[2] = {7, 7};
-//Initialize array or character objects
+//Initialize array of character objects
 CHARACTER Characters[20];
+// Initialize array of room objects
+ROOM Rooms[3][3];
 //Boolean statments to make sure the button press is only registered once
 bool moveState = digitalRead(26);
 bool lastMoveState = digitalRead(26);
@@ -203,7 +226,7 @@ const int ENEMYCOUNT = 7;
 
 void setup() {
   randomSeed(analogRead(0));
-  //type,posX,posY,cDirection,row,col,health,cStatus,cTile
+  //Character properties: type,posX,posY,cDirection,row,col,health,cStatus,cTile
   //Character 0 is the Hero
   Characters[0].properties(0,2,2,3,2,1,10,1,0);
   //All other characters are enemies
@@ -217,6 +240,19 @@ void setup() {
   //Right side Enemies
   Characters[5].properties(3,12,7,0,2,2,3,1,0);
   Characters[6].properties(3,12,7,0,1,2,3,1,0);
+  //Room properties: enemies, centre1X, centre1Y, centre2X, centre2Y, centre3X, centre3Y, centre4X, centre4Y
+  // Top Rooms
+  Rooms[0][0].properties(3,7,7,0,0,0,0,0,0);
+  Rooms[0][1].properties(1,7,7,0,0,0,0,0,0);
+  Rooms[0][2].properties(4,6,4,8,4,6,10,8,10);
+  // Middle Rooms
+  Rooms[1][0].properties(2,7,13,7,0,0,0,0,0);
+  Rooms[1][1].properties(0,7,7,0,0,0,0,0,0);
+  Rooms[1][2].properties(2,0,7,9,4,9,10,0,0);
+  // Bottom Rooms
+  Rooms[2][0].properties(4,7,7,0,0,0,0,0,0);
+  Rooms[2][1].properties(4,7,7,0,0,0,0,0,0);
+  Rooms[2][2].properties(3,7,7,0,0,0,0,0,0);
   //Initialize pins for Dpad and buttons
   for(int i = 22;i<28;i++){
     pinMode(i, INPUT);
@@ -226,7 +262,7 @@ void setup() {
   tft.begin();
   //Set the screen to landscape and clear it
   tft.setRotation(3);
-  tft.fillScreen(ILI9340_BLACK);
+  tft.fillScreen(ILI9341_BLACK);
   //initializeMap();
   drawMap();
 }
@@ -288,7 +324,7 @@ void placeChar() {
    }
    drawMap();
    //Place the Hero on the map
-   wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = 2;
+   wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = 42;
    //Draw the hero
    drawHero(Characters[0].posX,Characters[0].posY);
 }
@@ -307,20 +343,14 @@ void heroMove() {
   else {
     newPos[1] = 1;
   }
-  if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] >= 0){
+  if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] < 10) {
     drawTile(Characters[0].posX*spacing,Characters[0].posY*spacing,Characters[0].cTile);
-    wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = Characters[0].cTile;
-    if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] == 50){
-      Characters[0].cTile = 0;
-      Characters[0].health+=2;
-    }
-    else{
+      wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = Characters[0].cTile;
       Characters[0].cTile = wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]];
-    }
-    wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] = 2;
-    Characters[0].posX = Characters[0].posX + newPos[0];
-    Characters[0].posY = Characters[0].posY + newPos[1];
-    drawHero(Characters[0].posX,Characters[0].posY);
+      wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] = 42;
+      Characters[0].posX = Characters[0].posX + newPos[0];
+      Characters[0].posY = Characters[0].posY + newPos[1];
+      drawHero(Characters[0].posX,Characters[0].posY);
   }
   if(Characters[0].posX <= 0 || Characters[0].posX >= 14 || Characters[0].posY <= 0 || Characters[0].posY >= 14){
     placeChar();
@@ -340,8 +370,9 @@ void heroAttack(){
   if(wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] >= 100){
     int currentEnemy = wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]]-100;
     Characters[currentEnemy].health--;
-    if(Characters[currentEnemy].health <= 0){
+    if(Characters[currentEnemy].health <= 0) {
       Characters[currentEnemy].cStatus = 0;
+      Rooms[Characters[currentEnemy].row][Characters[currentEnemy].col].enemies--;
       wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] = Characters[currentEnemy].cTile;
       drawTile(Characters[currentEnemy].posX*spacing,Characters[currentEnemy].posY*spacing,Characters[currentEnemy].cTile);
       Characters[0].health = Characters[0].health + random(2);
@@ -363,14 +394,14 @@ void enemyMove(int i) {
    if(charDistance(Characters[i].posX, Characters[i].posY) > 8) {
       do {
          if(rand()%2 == 0) {
-            row = Characters[i].posX + (rand()%3 - 1);
+            row = Characters[i].posX + (random(3) - 1);
             column = Characters[i].posY;
          }
          else {
             row = Characters[i].posX;
-            column = Characters[i].posY + (rand()%3 - 1);
+            column = Characters[i].posY + (random(3) - 1);
          }
-      }while(wMap[wRow][wCol][row][column] == 1);
+      }while(wMap[wRow][wCol][row][column] >= 9);
    }
    else if(charDistance(Characters[i].posX, Characters[i].posY) == 1) {
       //Attack!
@@ -407,26 +438,30 @@ void enemyMove(int i) {
       for(int i = 0; i < 2; i++)
          moves[i] = moveDirection[i];
       if(abs(Characters[0].posX - Characters[i].posX) >= abs(Characters[0].posY - Characters[i].posY)) {
-         if(wMap[wRow][wCol][Characters[i].posX + moves[0]][Characters[i].posY] == 0 && moves[0] != 0)
+         if(wMap[wRow][wCol][Characters[i].posX + moves[0]][Characters[i].posY] <= 9 && moves[0] != 0)
             row += moves[0];
-         else if(wMap[wRow][wCol][Characters[i].posX][Characters[i].posY + moves[1]] == 0 && moves[1] != 0)
+         else if(wMap[wRow][wCol][Characters[i].posX][Characters[i].posY + moves[1]] <= 9 && moves[1] != 0)
             column += moves[1];
       }
       else if(moves[0] != 0 || moves[1] != 0) {
-         if(wMap[wRow][wCol][Characters[i].posX][Characters[i].posY + moves[1]] == 0 && moves[1] != 0)
+         if(wMap[wRow][wCol][Characters[i].posX][Characters[i].posY + moves[1]] <= 9 && moves[1] != 0)
             column += moves[1];
-         else if(wMap[wRow][wCol][Characters[i].posX + moves[0]][Characters[i].posY] == 0 && moves[0] != 0)
+         else if(wMap[wRow][wCol][Characters[i].posX + moves[0]][Characters[i].posY] <= 9 && moves[0] != 0)
             row += moves[0];
       }
       if (row == Characters[i].posX && column == Characters[i].posY) {
-         if(Characters[i].posX < centre[0] && Characters[0].posX < centre[0] && wMap[wRow][wCol][Characters[i].posX-1][Characters[i].posY] == 0)
-            row--;
-         else if(Characters[i].posX > centre[0] && Characters[0].posX > centre[0] && wMap[wRow][wCol][Characters[i].posX+1][Characters[i].posY] == 0)
-            row++;
-         else if(Characters[i].posY < centre[1] && Characters[0].posY < centre[1] && wMap[wRow][wCol][Characters[i].posX][Characters[i].posY-1] == 0)
-            column--;
-         else if(Characters[i].posY > centre[1] && Characters[0].posY > centre[1] && wMap[wRow][wCol][Characters[i].posX][Characters[i].posY+1] == 0)
-            column++;
+        for (int j = 10; j < 14; j++) {
+          if (wMap[wRow][wCol][Characters[i].posX + moves[0]][Characters[i].posY] == j || wMap[wRow][wCol][Characters[i].posX][Characters[i].posY + moves[1]] == j) {
+            if(Characters[i].posX < Rooms[Characters[i].row][Characters[i].col].centres[j-10][0] && Characters[0].posX < Rooms[Characters[i].row][Characters[i].col].centres[j-10][0] && wMap[wRow][wCol][Characters[i].posX-1][Characters[i].posY] <= 9)
+              row--;
+            else if(Characters[i].posX > Rooms[Characters[i].row][Characters[i].col].centres[j-10][0] && Characters[0].posX > Rooms[Characters[i].row][Characters[i].col].centres[j-10][0] && wMap[wRow][wCol][Characters[i].posX+1][Characters[i].posY] <= 9)
+              row++;
+            else if(Characters[i].posY < Rooms[Characters[i].row][Characters[i].col].centres[j-10][1] && Characters[0].posY < Rooms[Characters[i].row][Characters[i].col].centres[j-10][1] && wMap[wRow][wCol][Characters[i].posX][Characters[i].posY-1] <= 9)
+              column--;
+            else if(Characters[i].posY > Rooms[Characters[i].row][Characters[i].col].centres[j-10][1] && Characters[0].posY > Rooms[Characters[i].row][Characters[i].col].centres[j-10][1] && wMap[wRow][wCol][Characters[i].posX][Characters[i].posY+1] <= 9)
+              column++;
+          }
+        }
       }
    }
    drawTile(Characters[i].posX*spacing, Characters[i].posY*spacing,Characters[i].cTile);
@@ -462,11 +497,11 @@ void faceDirection() {
 }
 
 void deleteChunk(int x,int y) {
-  tft.fillRect(x*spacing,y*spacing,16,16,ILI9340_BLACK);
+  tft.fillRect(x*spacing,y*spacing,16,16,ILI9341_BLACK);
 }
 
 void drawMap() {
-  tft.fillScreen(ILI9340_BLACK);
+  tft.fillScreen(ILI9341_BLACK);
   for(int i = 0;i<15;i++) {
     for(int j = 0;j<15;j++) {
       drawTile(i*spacing,j*spacing,wMap[wRow][wCol][i][j]);
@@ -476,7 +511,7 @@ void drawMap() {
 
 void drawTile(int xPos,int yPos,int tileType) {
   
-  if(tileType == 0 || tileType >= 63 || tileType == 50 ){
+  if(tileType == 0 || tileType >= 63 ){
     tft.fillRect(xPos+1,yPos+1,2,15,0x8280);
     tft.fillRect(xPos+5,yPos,2,16,0x8280);
     tft.fillRect(xPos+9,yPos,2,16,0x8280);
@@ -495,7 +530,8 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.drawFastHLine(xPos+13,yPos+2,2,0x4140);
     tft.drawFastHLine(xPos+13,yPos+12,2,0x4140);
   }
-  if((tileType >= 1 && tileType <= 5) || (tileType <= 62 && tileType >=60)) {
+  // Walls
+  if((tileType >= 10 && tileType <= 13) || (tileType <= 62 && tileType >=60)) {
     tft.fillRect(xPos,yPos,spacing,spacing,0x5AEB);//Darker
     tft.fillRect(xPos+1,yPos+1,4,4,0x8430);//Lighter
     tft.fillRect(xPos+7,yPos+1,3,3,0x8430);
@@ -505,10 +541,11 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.fillRect(xPos+1,yPos+12,8,3,0x8430);
     tft.fillRect(xPos+11,yPos+11,4,4,0x8430);
   }
-  if(tileType == 4) {
+  if(tileType == 9) {
     //draw a door
   }
-  if(tileType == 6){
+  // Traps
+  if(tileType == 3){
     int colour = 0x31E0;
     tft.fillRect(xPos+1,yPos+1,2,15,0x8280);
     tft.fillRect(xPos+5,yPos,2,16,0x8280);
@@ -528,11 +565,12 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.drawFastHLine(xPos+13,yPos+2,2,colour);
     tft.drawFastHLine(xPos+13,yPos+12,2,colour);
   }
-  if(tileType ==7){
+  // Water
+  if(tileType == 14){
     tft.fillRect(xPos,yPos,spacing,spacing,0x19D9);
   }
   //Lava
-  if(tileType == 8){
+  if(tileType == 15){
     tft.fillRect(xPos,yPos,16,16,0xFD42);
     tft.fillRect(xPos,yPos,2,4,0xFB40);
     tft.fillRect(xPos+4,yPos,8,2,0xFB40);
@@ -545,8 +583,8 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.fillRect(xPos+6,yPos+12,4,2,0xFB40);
     tft.fillRect(xPos+4,yPos+14,8,2,0xFB40);
   }
-  //Wood Planks
-  if(tileType == 9){
+  // Planks
+  if(tileType == 1){
     tft.fillRect(xPos+1,yPos+1,2,15,0xD460);
     tft.fillRect(xPos+5,yPos,2,16,0xD460);
     tft.fillRect(xPos+9,yPos,2,16,0xD460);
@@ -566,35 +604,7 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.drawFastHLine(xPos+13,yPos+12,2,0x9320);
   }
   if(tileType == 50){
-    tft.drawFastVLine(xPos,yPos+4,3,0xED65);
-    tft.drawFastVLine(xPos+1,yPos+3,5,0xED65);
-    tft.drawFastVLine(xPos+2,yPos+2,7,0xED65);
-    tft.drawFastVLine(xPos+3,yPos+2,8,0xED65);
-    tft.drawFastVLine(xPos+4,yPos+2,9,0xED65);
-    tft.drawFastVLine(xPos+5,yPos+3,9,0xED65);
-    tft.drawFastVLine(xPos+6,yPos+4,9,0xED65);
-    tft.drawFastVLine(xPos+7,yPos+5,9,0xED65);
-    tft.drawFastVLine(xPos+8,yPos+5,9,0xED65);
-    tft.drawFastVLine(xPos+9,yPos+4,9,0xED65);
-    tft.drawFastVLine(xPos+10,yPos+3,9,0xED65);
-    tft.drawFastVLine(xPos+11,yPos+2,9,0xED65);
-    tft.drawFastVLine(xPos+12,yPos+2,8,0xED65);
-    tft.drawFastVLine(xPos+13,yPos+2,7,0xED65);
-    tft.drawFastVLine(xPos+14,yPos+3,5,0xED65);
-    tft.drawFastVLine(xPos+15,yPos+4,3,0xED65);
-    //Red
-    tft.drawFastVLine(xPos+2,yPos+4,3,0xD041);
-    tft.drawFastVLine(xPos+3,yPos+3,5,0xD041);
-    tft.drawFastVLine(xPos+4,yPos+3,6,0xD041);
-    tft.drawFastVLine(xPos+5,yPos+4,6,0xD041);
-    tft.drawFastVLine(xPos+6,yPos+5,6,0xD041);
-    tft.drawFastVLine(xPos+7,yPos+6,6,0xD041);
-    tft.drawFastVLine(xPos+8,yPos+6,6,0xD041);
-    tft.drawFastVLine(xPos+9,yPos+5,6,0xD041);
-    tft.drawFastVLine(xPos+10,yPos+4,6,0xD041);
-    tft.drawFastVLine(xPos+11,yPos+3,6,0xD041);
-    tft.drawFastVLine(xPos+12,yPos+3,5,0xD041);
-    tft.drawFastVLine(xPos+13,yPos+4,3,0xD041);
+    //Hearts?
   }
   int LG = 0x52A9;
   int DG = 0x3A07;
@@ -1179,12 +1189,12 @@ void drawEnemy(int i){
   //Enemy Facing Left
   if(Characters[i].cDirection == 0){
     //Enemy Horns
-    tft.drawFastVLine(x*spacing+2,y*spacing,3,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+3,y*spacing+1,3,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+4,y*spacing+1,1,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+13,y*spacing+1,1,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+14,y*spacing+1,3,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+15,y*spacing,3,ILI9340_WHITE);
+    tft.drawFastVLine(x*spacing+2,y*spacing,3,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+3,y*spacing+1,3,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+4,y*spacing+1,1,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+13,y*spacing+1,1,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+14,y*spacing+1,3,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+15,y*spacing,3,ILI9341_WHITE);
     //Enemy Head
     tft.fillRect(x*spacing+6,y*spacing,6,7,colour);
     tft.drawFastVLine(x*spacing+12,y*spacing+1,6,colour);
@@ -1211,12 +1221,12 @@ void drawEnemy(int i){
   //Enemy Facing Up
   else if(Characters[i].cDirection == 1){
     //Enemy Horns
-    tft.drawFastVLine(x*spacing+1,y*spacing,3,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+2,y*spacing+1,3,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+3,y*spacing+1,1,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+12,y*spacing+1,1,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+13,y*spacing+1,3,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+14,y*spacing,3,ILI9340_WHITE);
+    tft.drawFastVLine(x*spacing+1,y*spacing,3,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+2,y*spacing+1,3,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+3,y*spacing+1,1,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+12,y*spacing+1,1,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+13,y*spacing+1,3,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+14,y*spacing,3,ILI9341_WHITE);
     //Enemy Head
     tft.fillRect(x*spacing+5,y*spacing,6,7,colour);
     tft.drawFastVLine(x*spacing+4,y*spacing+1,6,colour);
@@ -1240,12 +1250,12 @@ void drawEnemy(int i){
   //Enemy Facing Right
   else if(Characters[i].cDirection == 2){
     //Enemy Horns
-    tft.drawFastVLine(x*spacing,y*spacing,3,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+1,y*spacing+1,3,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+2,y*spacing+1,1,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+11,y*spacing+1,1,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+12,y*spacing+1,3,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+13,y*spacing,3,ILI9340_WHITE);
+    tft.drawFastVLine(x*spacing,y*spacing,3,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+1,y*spacing+1,3,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+2,y*spacing+1,1,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+11,y*spacing+1,1,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+12,y*spacing+1,3,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+13,y*spacing,3,ILI9341_WHITE);
     //Enemy Head
     tft.fillRect(x*spacing+4,y*spacing,6,7,colour);
     tft.drawFastVLine(x*spacing+3,y*spacing+1,6,colour);
@@ -1272,12 +1282,12 @@ void drawEnemy(int i){
     //Enemy Facing Down
     else{
       //Enemy Horns
-    tft.drawFastVLine(x*spacing+1,y*spacing,3,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+2,y*spacing+1,3,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+3,y*spacing+1,1,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+12,y*spacing+1,1,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+13,y*spacing+1,3,ILI9340_WHITE);
-    tft.drawFastVLine(x*spacing+14,y*spacing,3,ILI9340_WHITE);
+    tft.drawFastVLine(x*spacing+1,y*spacing,3,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+2,y*spacing+1,3,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+3,y*spacing+1,1,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+12,y*spacing+1,1,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+13,y*spacing+1,3,ILI9341_WHITE);
+    tft.drawFastVLine(x*spacing+14,y*spacing,3,ILI9341_WHITE);
     //Enemy Head
     tft.fillRect(x*spacing+5,y*spacing,6,7,colour);
     tft.drawFastVLine(x*spacing+4,y*spacing+1,6,colour);
@@ -1318,7 +1328,7 @@ void drawHero(int x,int y) {
   //Colours, BLACK,BLUE,RED,GREEN,CYAN,MAGENTA,YELLOW,WHITE
   //tft.drawFastVLine(x,y,length, colour)
   //tft.drawFastHLine(x,y,length, colour)
-  //tft.drawPixel(x*10,y*10,ILI9340_BLACK)
+  //tft.drawPixel(x*10,y*10,ILI9341_BLACK)
   //tft.drawRect(x,y,width,height,colour)
   //Hero facing left
   if(Characters[0].cDirection == 0) {
@@ -1329,9 +1339,6 @@ void drawHero(int x,int y) {
     tft.drawFastHLine(x*spacing+10,y*spacing+3,4,0x1CB0);
     tft.drawFastHLine(x*spacing+11,y*spacing+4,3,0x1CB0);
     tft.drawFastHLine(x*spacing+12,y*spacing+5,2,0x1CB0);
-    //Draw Eyes
-    tft.fillRect(x*spacing+4,y*spacing+4,2,2,0x0000);
-    tft.fillRect(x*spacing+8,y*spacing+4,2,2,0x0000);
     //Draw Skin
     tft.drawFastHLine(x*spacing+3,y*spacing+3,7,0xEEEF);
     tft.drawFastVLine(x*spacing+10,y*spacing+4,2,0xEEEF);
@@ -1346,7 +1353,7 @@ void drawHero(int x,int y) {
     tft.fillRect(x*spacing+4,y*spacing+12,10,2,0x1CB0);
     //Draw Belt
     tft.fillRect(x*spacing+4,y*spacing+10,10,2,0xDD00);
-    tft.fillRect(x*spacing+6,y*spacing+10,2,2,ILI9340_YELLOW);
+    tft.fillRect(x*spacing+6,y*spacing+10,2,2,ILI9341_YELLOW);
     
     //Draw Sword
     tft.drawFastHLine(x*spacing,y*spacing+7,2,0xA000);
@@ -1396,9 +1403,6 @@ void drawHero(int x,int y) {
     tft.drawFastHLine(x*spacing+2,y*spacing+3,4,0x1CB0);
     tft.drawFastHLine(x*spacing+2,y*spacing+4,3,0x1CB0);
     tft.drawFastHLine(x*spacing+2,y*spacing+5,2,0x1CB0);
-    //Draw eyes
-    tft.fillRect(x*spacing+6,y*spacing+4,2,2,0x0000);
-    tft.fillRect(x*spacing+10,y*spacing+4,2,2,0x0000);
     //Draw Skin
     tft.drawFastHLine(x*spacing+6,y*spacing+3,7,0xEEEF);
     tft.drawFastVLine(x*spacing+5,y*spacing+4,4,0xEEEF);
@@ -1414,7 +1418,7 @@ void drawHero(int x,int y) {
     tft.fillRect(x*spacing+2,y*spacing+12,10,2,0x1CB0);
     //Draw Belt
     tft.fillRect(x*spacing+2,y*spacing+10,10,2,0xDD00);
-    tft.fillRect(x*spacing+8,y*spacing+10,2,2,ILI9340_YELLOW);
+    tft.fillRect(x*spacing+8,y*spacing+10,2,2,ILI9341_YELLOW);
     //Draw Sword
     tft.drawFastHLine(x*spacing+14,y*spacing+7,2,0xA000);
     tft.fillRect(x*spacing+14,y*spacing+10,2,2,0xA000);
@@ -1436,9 +1440,6 @@ void drawHero(int x,int y) {
     tft.fillRect(x*spacing+11,y*spacing+2,2,2,0x1CB0);
     tft.drawFastVLine(x*spacing+3,y*spacing+4,2,0x1CB0);
     tft.drawFastVLine(x*spacing+12,y*spacing+4,2,0x1CB0);
-    //Draw eyes
-    tft.fillRect(x*spacing+5,y*spacing+4,2,2,0x0000);
-    tft.fillRect(x*spacing+9,y*spacing+4,2,2,0x0000);
     //Draw Skin
     tft.drawFastHLine(x*spacing+5,y*spacing+3,6,0xEEEF);
     tft.drawFastVLine(x*spacing+4,y*spacing+4,2,0xEEEF);
@@ -1452,7 +1453,7 @@ void drawHero(int x,int y) {
     tft.fillRect(x*spacing+4,y*spacing+12,8,2,0x1CB0);
     //Draw Belt
     tft.fillRect(x*spacing+4,y*spacing+10,8,2,0xDD00);
-    tft.fillRect(x*spacing+7,y*spacing+10,2,2,ILI9340_YELLOW);
+    tft.fillRect(x*spacing+7,y*spacing+10,2,2,ILI9341_YELLOW);
     
     //Draw Sword
     tft.drawFastHLine(x*spacing+13,y*spacing+8,2,0xA000);

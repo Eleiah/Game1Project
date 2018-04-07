@@ -20,7 +20,7 @@ Walkable:
 	3 - traps
 	4 - boss lava
 	5 - hearts
-	6 - potions
+	6 - heart containers
 	7 - items
 	8 - 
 	9 - doors

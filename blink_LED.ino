@@ -11,9 +11,8 @@
 
 Adafruit_ILI9340 tft = Adafruit_ILI9340(_cs, _dc, _mosi, _sclk, _rst, _miso);
 
-//Character objects for Hero and Enemies
-class CHARACTER
-{
+//Character class for Hero and Enemies
+class CHARACTER {
   public:
   int health;
   int posX;
@@ -24,8 +23,7 @@ class CHARACTER
   bool cStatus;
   int type;
   int cTile;
-  void properties(int _type,int _posX,int _posY,int _cDirection,int _row,int _col,int _health,bool _cStatus,int _cTile)
-  {
+  void properties(int _type,int _posX,int _posY,int _cDirection,int _row,int _col,int _health,bool _cStatus,int _cTile) {
     type = _type;
     posX = _posX;
     posY = _posY;
@@ -35,6 +33,24 @@ class CHARACTER
     health = _health;
     cStatus = _cStatus;
     cTile = _cTile;
+  }
+};
+
+class ROOM
+{
+  public:
+  int enemies;
+  int centres[4][2];
+  void properties(int _enemies,int _centre1X,int _centre1Y,int _centre2X,int _centre2Y,int _centre3X,int _centre3Y,int _centre4X,int _centre4Y) {
+    enemies = _enemies;
+    centres[0][0] = _centre1X;
+    centres[0][1] = _centre1Y;
+    centres[1][0] = _centre2X;
+    centres[1][0] = _centre2Y;
+    centres[2][0] = _centre3X;
+    centres[2][0] = _centre3Y;
+    centres[3][0] = _centre4X;
+    centres[3][0] = _centre4Y;
   }
 };
 
@@ -74,13 +90,13 @@ int wMap[3][3][15][15] = {{{{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //L 
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
                             {10,0,3,0,3,0,0,0,0,0,3,0,3,0,10},
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
-                            {10,0,0,0,0,10,3,0,3,2,0,0,0,0,10},
-                            {10,0,0,0,10,10,0,0,0,2,2,0,0,0,10},
-                            {10,0,0,10,10,10,0,0,0,2,2,2,0,0,10},
-                            {10,0,0,10,10,10,0,0,3,2,2,2,0,0,0},
-                            {10,0,0,10,10,10,0,0,0,2,2,2,0,0,10},
-                            {10,0,0,0,10,10,0,0,0,2,2,0,0,0,10},
-                            {10,0,0,0,0,10,3,0,3,2,0,0,0,0,10},
+                            {10,0,0,0,0,10,3,0,3,11,0,0,0,0,10},
+                            {10,0,0,0,10,10,0,0,0,11,11,0,0,0,10},
+                            {10,0,0,10,10,10,0,0,0,11,11,11,0,0,10},
+                            {10,0,0,10,10,10,0,0,3,11,11,11,0,0,0},
+                            {10,0,0,10,10,10,0,0,0,11,11,11,0,0,10},
+                            {10,0,0,0,10,10,0,0,0,11,11,0,0,0,10},
+                            {10,0,0,0,0,10,3,0,3,11,0,0,0,0,10},
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
                             {10,0,3,0,3,0,0,0,0,0,3,0,3,0,10},
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
@@ -119,16 +135,16 @@ int wMap[3][3][15][15] = {{{{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //L 
                             {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}},
 
                            {{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //D Room 2
-                            {10,0,0,3,3,3,3,3,3,3,3,3,0,0,10},
-                            {10,0,0,0,3,3,3,3,3,3,3,0,0,0,10},
-                            {10,0,0,0,0,3,3,3,3,3,0,0,0,0,10},
-                            {10,0,3,0,0,0,3,3,3,0,0,0,3,0,10},
+                            {10,0,0,12,12,12,12,12,12,12,12,12,0,0,10},
+                            {10,0,0,0,12,12,12,12,12,12,12,0,0,0,10},
+                            {10,0,0,0,0,12,12,12,12,12,0,0,0,0,10},
+                            {10,0,3,0,0,0,12,12,12,0,0,0,3,0,10},
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
                             {0,0,0,0,0,0,3,0,3,0,0,0,0,0,0},
-                            {10,0,0,0,2,0,0,0,0,0,2,0,0,0,10},
-                            {10,0,0,2,2,2,0,0,0,2,2,2,0,0,10},
-                            {10,0,0,0,2,0,0,0,0,0,2,0,0,0,10},
+                            {10,0,0,0,11,0,0,0,0,0,10,0,0,0,10},
+                            {10,0,0,11,11,11,0,0,0,10,10,10,0,0,10},
+                            {10,0,0,0,11,0,0,0,0,0,10,0,0,0,10},
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
                             {10,0,0,0,0,0,0,3,0,0,0,0,0,0,10},
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
@@ -180,13 +196,15 @@ int wMap[3][3][15][15] = {{{{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //L 
                             {10,0,0,3,0,0,0,0,0,0,0,3,0,0,10},
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
-                            {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}}}};                     
+                            {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}}}};
+         
 //Spacing sets the size of each block, 16x16 pixels
 int spacing = 16;
 bool dPad[4];
-int centre[2] = {7, 7};
-//Initialize array or character objects
-CHARACTER Characters[20];
+//Initialize array of character objects
+CHARACTER Characters[22];
+// Initialize array of room objects
+ROOM Rooms[3][3];
 //Boolean statments to make sure the button press is only registered once
 bool moveState = digitalRead(26);
 bool lastMoveState = digitalRead(26);
@@ -194,25 +212,59 @@ bool attackState = digitalRead(27);
 bool lastAttackState = digitalRead(27);
 int wRow = 2;
 int wCol = 1;
-const int ENEMYCOUNT = 7;
+const int ENEMYCOUNT = 21;
 
 void setup() {
   randomSeed(analogRead(0));
-  //type,posX,posY,cDirection,row,col,health,cStatus,cTile
+  
+  //Character properties: type,posX,posY,cDirection,row,col,health,cStatus,cTile
   //Character 0 is the Hero
   Characters[0].properties(0,2,2,3,2,1,10,1,0);
-  //All other characters are enemies
-  //Left side Enemies
-  Characters[4].properties(1,7,3,0,2,0,3,1,0);
-  //Middle side Enemies
-  Characters[1].properties(4,13,13,0,2,1,3,1,0);
-  Characters[2].properties(4,13,2,1,2,1,3,1,0);
-  Characters[7].properties(4,7,7,2,2,1,3,1,0);
-  Characters[3].properties(4,2,13,3,2,1,3,1,0);
-  //Right side Enemies
-  Characters[5].properties(3,12,7,0,2,2,3,1,0);
-  Characters[6].properties(3,12,7,0,1,2,3,1,0);
-  //Initialize pins for Dpad and buttons
+  // All other characters are enemies
+  // Top left enemies
+  Characters[1].properties(1,7,4,0,0,0,3,1,0);
+  Characters[2].properties(1,4,8,0,0,0,3,1,0);
+  Characters[3].properties(1,10,8,0,0,0,3,1,0);
+  // Top right enemies
+  Characters[4].properties(3,3,4,0,0,2,3,1,0);
+  Characters[5].properties(3,11,3,0,0,2,3,1,0);
+  Characters[6].properties(3,2,8,0,0,2,3,1,0);
+  Characters[7].properties(3,12,8,0,0,2,3,1,0);
+  // Middle left enemies
+  Characters[8].properties(1,2,2,0,1,0,3,1,0);
+  Characters[9].properties(1,12,2,0,1,0,3,1,0);
+  // Middle right enemies
+  Characters[10].properties(3,5,3,0,1,2,3,1,0);
+  Characters[11].properties(3,12,4,0,1,2,3,1,0);
+  Characters[12].properties(3,4,10,0,1,2,3,1,0);
+  // Bottom left enemies
+  Characters[13].properties(1,5,2,0,2,0,3,1,0);
+  Characters[14].properties(1,9,2,0,2,0,3,1,0);
+  Characters[15].properties(1,3,7,0,2,0,3,1,0);
+  Characters[16].properties(1,7,10,0,2,0,3,1,0);
+  // Bottom centre enemies
+  Characters[17].properties(5,13,2,1,2,1,3,1,0);
+  Characters[18].properties(5,2,13,3,2,1,3,1,0);
+  // Bottom right enemies
+  Characters[19].properties(3,5,3,0,2,2,3,1,0);
+  Characters[20].properties(3,12,5,0,2,2,3,1,0);
+  Characters[21].properties(3,9,12,0,2,2,3,1,0);
+  
+  // Room properties: enemies, centre1X, centre1Y, centre2X, centre2Y, centre3X, centre3Y, centre4X, centre4Y
+  // Top Rooms
+  Rooms[0][0].properties(3,7,7,0,0,0,0,0,0);
+  Rooms[0][1].properties(1,7,7,0,0,0,0,0,0);
+  Rooms[0][2].properties(4,4,6,4,8,10,6,10,8);
+  // Middle Rooms
+  Rooms[1][0].properties(2,13,7,0,7,0,0,0,0);
+  Rooms[1][1].properties(0,7,7,0,0,0,0,0,0);
+  Rooms[1][2].properties(2,9,10,9,4,0,7,0,0);
+  // Bottom Rooms
+  Rooms[2][0].properties(4,7,7,0,0,0,0,0,0);
+  Rooms[2][1].properties(4,7,7,0,0,0,0,0,0);
+  Rooms[2][2].properties(3,7,7,0,0,0,0,0,0);
+  
+  //Initialize pins for d-pad and buttons
   for(int i = 22;i<28;i++){
     pinMode(i, INPUT);
     digitalWrite(i, HIGH);
@@ -253,6 +305,7 @@ void loop() {
     lastAttackState = attackState;
   }
 }
+
 //Place the character after a map change
 void placeChar() {
   //Remove Hero from current spot
@@ -283,7 +336,7 @@ void placeChar() {
    }
    drawMap();
    //Place the Hero on the map
-   wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = 2;
+   wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = 42;
    //Draw the hero
    drawHero(Characters[0].posX,Characters[0].posY);
 }
@@ -302,19 +355,19 @@ void heroMove() {
   else {
     newPos[1] = 1;
   }
-  if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] < 10){
+  if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] < 10) {
     drawTile(Characters[0].posX*spacing,Characters[0].posY*spacing,Characters[0].cTile);
     wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = Characters[0].cTile;
-    if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] == 5){
+    if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] == 5) {
       Characters[0].health+=2;
     }
     else{
       Characters[0].cTile = wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]];
-      if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] == 3){
+      if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] == 3) {
         Characters[0].health-=1;
       }
     }
-    wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] = 2;
+    wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] = 42;
     Characters[0].posX = Characters[0].posX + newPos[0];
     Characters[0].posY = Characters[0].posY + newPos[1];
     drawHero(Characters[0].posX,Characters[0].posY);
@@ -337,8 +390,9 @@ void heroAttack(){
   if(wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] >= 100){
     int currentEnemy = wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]]-100;
     Characters[currentEnemy].health--;
-    if(Characters[currentEnemy].health <= 0){
+    if(Characters[currentEnemy].health <= 0) {
       Characters[currentEnemy].cStatus = 0;
+      Rooms[Characters[currentEnemy].row][Characters[currentEnemy].col].enemies--;
       wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] = Characters[currentEnemy].cTile;
       drawTile(Characters[currentEnemy].posX*spacing,Characters[currentEnemy].posY*spacing,Characters[currentEnemy].cTile);
       Characters[0].health = Characters[0].health + random(2);
@@ -346,7 +400,7 @@ void heroAttack(){
   }
 }
 void enemiesMove(){
-  for(int i = 1;i<ENEMYCOUNT+1;i++){
+  for(int i = 1; i < ENEMYCOUNT + 1; i++){
     if(Characters[i].cStatus == 1 && (Characters[i].col == Characters[0].col && Characters[i].row == Characters[0].row))
       enemyMove(i);
   }
@@ -360,14 +414,14 @@ void enemyMove(int i) {
    if(charDistance(Characters[i].posX, Characters[i].posY) > 8) {
       do {
          if(rand()%2 == 0) {
-            row = Characters[i].posX + (rand()%3 - 1);
+            row = Characters[i].posX + (random(3) - 1);
             column = Characters[i].posY;
          }
          else {
             row = Characters[i].posX;
-            column = Characters[i].posY + (rand()%3 - 1);
+            column = Characters[i].posY + (random(3) - 1);
          }
-      }while(wMap[wRow][wCol][row][column] == 1);
+      }while(wMap[wRow][wCol][row][column] >= 9);
    }
    else if(charDistance(Characters[i].posX, Characters[i].posY) == 1) {
       //Attack!
@@ -404,26 +458,30 @@ void enemyMove(int i) {
       for(int i = 0; i < 2; i++)
          moves[i] = moveDirection[i];
       if(abs(Characters[0].posX - Characters[i].posX) >= abs(Characters[0].posY - Characters[i].posY)) {
-         if(wMap[wRow][wCol][Characters[i].posX + moves[0]][Characters[i].posY] == 0 && moves[0] != 0)
+         if(wMap[wRow][wCol][Characters[i].posX + moves[0]][Characters[i].posY] <= 9 && moves[0] != 0)
             row += moves[0];
-         else if(wMap[wRow][wCol][Characters[i].posX][Characters[i].posY + moves[1]] == 0 && moves[1] != 0)
+         else if(wMap[wRow][wCol][Characters[i].posX][Characters[i].posY + moves[1]] <= 9 && moves[1] != 0)
             column += moves[1];
       }
       else if(moves[0] != 0 || moves[1] != 0) {
-         if(wMap[wRow][wCol][Characters[i].posX][Characters[i].posY + moves[1]] == 0 && moves[1] != 0)
+         if(wMap[wRow][wCol][Characters[i].posX][Characters[i].posY + moves[1]] <= 9 && moves[1] != 0)
             column += moves[1];
-         else if(wMap[wRow][wCol][Characters[i].posX + moves[0]][Characters[i].posY] == 0 && moves[0] != 0)
+         else if(wMap[wRow][wCol][Characters[i].posX + moves[0]][Characters[i].posY] <= 9 && moves[0] != 0)
             row += moves[0];
       }
       if (row == Characters[i].posX && column == Characters[i].posY) {
-         if(Characters[i].posX < centre[0] && Characters[0].posX < centre[0] && wMap[wRow][wCol][Characters[i].posX-1][Characters[i].posY] == 0)
-            row--;
-         else if(Characters[i].posX > centre[0] && Characters[0].posX > centre[0] && wMap[wRow][wCol][Characters[i].posX+1][Characters[i].posY] == 0)
-            row++;
-         else if(Characters[i].posY < centre[1] && Characters[0].posY < centre[1] && wMap[wRow][wCol][Characters[i].posX][Characters[i].posY-1] == 0)
-            column--;
-         else if(Characters[i].posY > centre[1] && Characters[0].posY > centre[1] && wMap[wRow][wCol][Characters[i].posX][Characters[i].posY+1] == 0)
-            column++;
+         for (int j = 10; j < 14; j++) {
+          if (wMap[wRow][wCol][Characters[i].posX + moves[0]][Characters[i].posY] == j || wMap[wRow][wCol][Characters[i].posX][Characters[i].posY + moves[1]] == j) {
+            if(Characters[i].posY <= Rooms[Characters[i].row][Characters[i].col].centres[j-10][1] && Characters[0].posY <= Rooms[Characters[i].row][Characters[i].col].centres[j-10][1] && wMap[wRow][wCol][Characters[i].posX][Characters[i].posY-1] <= 9)
+              column--;
+            else if(Characters[i].posY >= Rooms[Characters[i].row][Characters[i].col].centres[j-10][1] && Characters[0].posY >= Rooms[Characters[i].row][Characters[i].col].centres[j-10][1] && wMap[wRow][wCol][Characters[i].posX][Characters[i].posY+1] <= 9)
+              column++;
+            else if(Characters[i].posX <= Rooms[Characters[i].row][Characters[i].col].centres[j-10][0] && Characters[0].posX <= Rooms[Characters[i].row][Characters[i].col].centres[j-10][0] && wMap[wRow][wCol][Characters[i].posX-1][Characters[i].posY] <= 9)
+              row--;
+            else if(Characters[i].posX >= Rooms[Characters[i].row][Characters[i].col].centres[j-10][0] && Characters[0].posX >= Rooms[Characters[i].row][Characters[i].col].centres[j-10][0] && wMap[wRow][wCol][Characters[i].posX+1][Characters[i].posY] <= 9)
+              row++;
+          }
+        }
       }
    }
    drawTile(Characters[i].posX*spacing, Characters[i].posY*spacing,Characters[i].cTile);

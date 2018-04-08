@@ -217,6 +217,7 @@ int wCol = 1;
 int weapon = 0;
 const int ENEMYCOUNT = 21;
 int bossHp = 20;
+bool bossRoom = false;
 int weapons = 1;
 
 void setup() {
@@ -382,7 +383,7 @@ void heroMove() {
   else {
     newPos[1] = 1;
   }
-  if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] < 10) {
+  if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] < 10 || (wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] >= 50 && wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] <= 59)) {
     drawTile(Characters[0].posX*spacing,Characters[0].posY*spacing,Characters[0].cTile);
     wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = Characters[0].cTile;
     if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] == 5) {
@@ -392,7 +393,7 @@ void heroMove() {
     else if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] == 7) {
       weapons = 2;
     }
-    else{
+    else {
       Characters[0].cTile = wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]];
       if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] == 3) {
         Characters[0].health-=1;
@@ -403,9 +404,167 @@ void heroMove() {
     Characters[0].posX = Characters[0].posX + newPos[0];
     Characters[0].posY = Characters[0].posY + newPos[1];
     drawHero(Characters[0].posX,Characters[0].posY);
+    if((Characters[0].row == 0 && Characters[0].col == 1) && bossRoom == 1) {
+      bossMechanics(0);
+    }
   }
   if(Characters[0].posX <= 0 || Characters[0].posX >= 14 || Characters[0].posY <= 0 || Characters[0].posY >= 14){
     placeChar();
+  }
+  if((Characters[0].row == 0 && Characters[0].col == 1) && bossRoom == 0 && Characters[0].posY <= 10) {
+    bossRoom = true;
+  }
+}
+
+void bossMechanics(int mechanicNum) {
+  
+  if(mechanicNum == 0){
+    if(random(10) == 0 && Characters[0].cTile == 2) {
+      Characters[0].cTile = 50;
+      drawHero(Characters[0].posX,Characters[0].posY);
+    }
+    else if(Characters[0].cTile == 50) {
+      Characters[0].cTile = 51;
+      drawHero(Characters[0].posX,Characters[0].posY);
+      Characters[0].health-=2;
+      hearts();
+    }
+    else if(Characters[0].cTile == 51) {
+      Characters[0].cTile = 52;
+      drawHero(Characters[0].posX,Characters[0].posY);
+      Characters[0].health-=2;
+      hearts();
+    }
+    else if(Characters[0].cTile == 52) {
+      Characters[0].cTile = 2;
+      drawHero(Characters[0].posX,Characters[0].posY);
+      Characters[0].health-=2;
+      hearts();
+    }
+    //Place Random Lava
+    for(int i = 0;i<15;i++) {
+      for(int j = 0;j<15;j++) {
+        if(wMap[wRow][wCol][i][j] == 2  && random(10) == 0  ) {
+          wMap[wRow][wCol][i][j] = 50;
+          drawTile(i*spacing,j*spacing,wMap[wRow][wCol][i][j]);
+        }
+        else if(wMap[wRow][wCol][i][j] == 50) {
+          wMap[wRow][wCol][i][j] = 51;
+          drawTile(i*spacing,j*spacing,wMap[wRow][wCol][i][j]);
+        }
+        else if(wMap[wRow][wCol][i][j] == 51) {
+          wMap[wRow][wCol][i][j] = 52;
+          drawTile(i*spacing,j*spacing,wMap[wRow][wCol][i][j]);
+        }
+        else if(wMap[wRow][wCol][i][j] == 52) {
+          wMap[wRow][wCol][i][j] = 2;
+          drawTile(i*spacing,j*spacing,wMap[wRow][wCol][i][j]);
+        }
+      }
+    }
+  }
+  else if(mechanicNum == 1) {
+    for(int i = 2;i<4;i++) {
+      if(wMap[wRow][wCol][5][i] != 42) {
+        if(wMap[wRow][wCol][5][i] == 2) {
+          wMap[wRow][wCol][5][i] = 50;
+          drawTile(5*spacing,i*spacing,wMap[wRow][wCol][5][i]);
+        }
+        else if(wMap[wRow][wCol][5][i] < 52) {
+          wMap[wRow][wCol][5][i]++;
+          drawTile(5*spacing,i*spacing,wMap[wRow][wCol][5][i]);
+        }
+        else if(wMap[wRow][wCol][5][i] == 52) {
+          wMap[wRow][wCol][5][i] = 2;
+          drawTile(5*spacing,i*spacing,wMap[wRow][wCol][5][i]);
+        }
+      }
+      else {
+        if(Characters[0].cTile == 2) {
+          Characters[0].cTile = 50;
+          drawHero(Characters[0].posX,Characters[0].posY);
+        }
+        else if(Characters[0].cTile < 52) {
+          Characters[0].cTile++;
+          drawHero(Characters[0].posX,Characters[0].posY);
+          Characters[0].health -= 2;
+          hearts();
+        }
+        else {
+          Characters[0].cTile = 2;
+          drawHero(Characters[0].posX,Characters[0].posY);
+          Characters[0].health -= 2;
+          hearts();
+        }
+      }
+      if(wMap[wRow][wCol][9][i] != 42) {
+        if(wMap[wRow][wCol][9][i] == 2) {
+          wMap[wRow][wCol][9][i] = 50;
+          drawTile(9*spacing,i*spacing,wMap[wRow][wCol][9][i]);
+        }
+        else if(wMap[wRow][wCol][9][i] < 52) {
+          wMap[wRow][wCol][9][i]++;
+          drawTile(9*spacing,i*spacing,wMap[wRow][wCol][9][i]);
+        }
+        else if(wMap[wRow][wCol][9][i] == 52) {
+          wMap[wRow][wCol][9][i] = 2;
+          drawTile(9*spacing,i*spacing,wMap[wRow][wCol][9][i]);
+        }
+      }
+      else {
+        if(Characters[0].cTile == 2) {
+          Characters[0].cTile = 50;
+          drawHero(Characters[0].posX,Characters[0].posY);
+        }
+        else if(Characters[0].cTile < 52) {
+          Characters[0].cTile++;
+          drawHero(Characters[0].posX,Characters[0].posY);
+          Characters[0].health -= 2;
+          hearts();
+        }
+        else {
+          Characters[0].cTile = 2;
+          drawHero(Characters[0].posX,Characters[0].posY);
+          Characters[0].health -= 2;
+          hearts();
+        }
+      }
+    }
+    
+    for(int i = 6;i<9;i++) {
+      if(wMap[wRow][wCol][i][3] != 42) {
+        if(wMap[wRow][wCol][i][3] == 2) {
+          wMap[wRow][wCol][i][3] = 50;
+          drawTile(i*spacing,3*spacing,wMap[wRow][wCol][i][3]);
+        }
+        else if(wMap[wRow][wCol][i][3] < 52) {
+          wMap[wRow][wCol][i][3]++;
+          drawTile(i*spacing,3*spacing,wMap[wRow][wCol][i][3]);
+        }
+        else if(wMap[wRow][wCol][i][3] == 52) {
+          wMap[wRow][wCol][i][3] = 2;
+          drawTile(i*spacing,3*spacing,wMap[wRow][wCol][i][3]);
+        }
+      }
+      else {
+        if(Characters[0].cTile == 2) {
+          Characters[0].cTile = 50;
+          drawHero(Characters[0].posX,Characters[0].posY);
+        }
+        else if(Characters[0].cTile < 52) {
+          Characters[0].cTile++;
+          drawHero(Characters[0].posX,Characters[0].posY);
+          Characters[0].health -= 2;
+          hearts();
+        }
+        else {
+          Characters[0].cTile = 2;
+          drawHero(Characters[0].posX,Characters[0].posY);
+          Characters[0].health -= 2;
+          hearts();
+        }
+      }
+    }
   }
 }
 
@@ -420,6 +579,9 @@ void heroAttack(){
   else
     attacks[1] = 1;
   if (weapon == 0) {
+    if((Characters[0].row == 0 && Characters[0].col == 1) && bossRoom == 1) {
+      bossMechanics(0);
+    }
     if(wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] >= 100){
       int currentEnemy = wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]]-100;
       Characters[currentEnemy].health -= 2;
@@ -442,9 +604,13 @@ void heroAttack(){
         tft.setTextColor(0xFFFF);
         tft.print("YOU WON");
       }
+      bossMechanics(1);
     }
   }
   else if (weapon == 1) {
+    if((Characters[0].row == 0 && Characters[0].col == 1) && bossRoom == 1) {
+      bossMechanics(0);
+    }
     if(wMap[wRow][wCol][Characters[0].posX + 2*attacks[0]][Characters[0].posY + 2*attacks[1]] >= 100){
       int currentEnemy = wMap[wRow][wCol][Characters[0].posX + 2*attacks[0]][Characters[0].posY + 2*attacks[1]]-100;
       Characters[currentEnemy].health--;
@@ -467,6 +633,7 @@ void heroAttack(){
         tft.setTextColor(0xFFFF);
         tft.print("YOU WON");
       }
+      bossMechanics(2);
     }
   }
 }
@@ -1035,19 +1202,6 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.fillRect(xPos+1,yPos+12,8,3,0x8430);
     tft.fillRect(xPos+11,yPos+11,4,4,0x8430);
   }
-  //Boss Almost Lava
-  else if(tileType == 16){
-    int outC = 0xD3C1;
-    int inC = 0x6120;
-    tft.fillRect(xPos,yPos,spacing,spacing,outC);//Outer bits
-    tft.fillRect(xPos+1,yPos+1,4,4,inC);//Inner stones
-    tft.fillRect(xPos+7,yPos+1,3,3,inC);
-    tft.fillRect(xPos+12,yPos+1,3,3,inC);
-    tft.fillRect(xPos+1,yPos+7,6,3,inC);
-    tft.fillRect(xPos+9,yPos+6,6,3,inC);
-    tft.fillRect(xPos+1,yPos+12,8,3,inC);
-    tft.fillRect(xPos+11,yPos+11,4,4,inC);
-  }
   //Water
   else if(tileType ==14){
     int waterColour = 0x1412;
@@ -1097,7 +1251,7 @@ void drawTile(int xPos,int yPos,int tileType) {
     
   }
   //Lava
-  else if(tileType == 15){
+  else if(tileType == 15 || tileType == 51 || tileType == 52){
     tft.fillRect(xPos,yPos,16,16,0xFD42);
     tft.fillRect(xPos,yPos,2,4,0xFB40);
     tft.fillRect(xPos+4,yPos,8,2,0xFB40);
@@ -1109,6 +1263,19 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.fillRect(xPos+12,yPos+10,4,4,0xFB40);
     tft.fillRect(xPos+6,yPos+12,4,2,0xFB40);
     tft.fillRect(xPos+4,yPos+14,8,2,0xFB40);
+  }
+  //Boss Almost Lava
+  else if(tileType == 16 || tileType == 50){
+    int outC = 0xD3C1;
+    int inC = 0x6120;
+    tft.fillRect(xPos,yPos,spacing,spacing,outC);//Outer bits
+    tft.fillRect(xPos+1,yPos+1,4,4,inC);//Inner stones
+    tft.fillRect(xPos+7,yPos+1,3,3,inC);
+    tft.fillRect(xPos+12,yPos+1,3,3,inC);
+    tft.fillRect(xPos+1,yPos+7,6,3,inC);
+    tft.fillRect(xPos+9,yPos+6,6,3,inC);
+    tft.fillRect(xPos+1,yPos+12,8,3,inC);
+    tft.fillRect(xPos+11,yPos+11,4,4,inC);
   }
   //Empty Heart
   else if(tileType == 30){

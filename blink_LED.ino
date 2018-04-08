@@ -123,11 +123,11 @@ int wMap[3][3][15][15] = {{{{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //L 
                             {10,15,15,15,15,15,15,15,15,15,15,15,15,15,10},
                             {10,15,15,15,15,15,15,15,15,15,15,15,15,15,10},
                             {10,15,15,15,15,15,15,15,15,15,15,15,15,15,10},
-                            {10,10,5,1,15,15,15,15,15,15,15,15,15,10,10},
+                            {10,10,5,5,15,15,15,15,15,15,15,15,15,10,10},
                             {2,2,1,1,1,1,1,1,1,1,1,1,1,0,10},
                             {2,2,1,1,1,1,1,1,1,1,1,1,1,0,0},
                             {2,2,1,1,1,1,1,1,1,1,1,1,1,0,10},
-                            {10,10,5,1,15,15,15,15,15,15,15,15,15,10,10},
+                            {10,10,5,5,15,15,15,15,15,15,15,15,15,10,10},
                             {10,15,15,15,15,15,15,15,15,15,15,15,15,15,10},
                             {10,15,15,15,15,15,15,15,15,15,15,15,15,15,10},
                             {10,15,15,15,15,15,15,15,15,15,15,15,15,15,10},
@@ -1010,16 +1010,19 @@ void drawTile(int xPos,int yPos,int tileType) {
   }
   else if(tileType == 7) {
     drawTile(xPos,yPos,0);
-    
-    /*
-    //Draw Spear
-    tft.drawFastVLine(xPos+6,yPos+1,2,0x9DB7);
-    tft.drawFastVLine(xPos+8,yPos+1,2,0x9DB7);
-    tft.drawFastVLine(xPos+5,yPos+2,5,0x9DB7);
-    tft.drawFastVLine(xPos+9,yPos+2,5,0x9DB7);
-    tft.drawFastVLine(xPos+6,yPos+6,2,0x9DB7);
-    tft.drawFastVLine(xPos+8,yPos+6,2,0x9DB7);
-    tft.drawFastVLine(xPos+7,yPos+4,10,0x9DB7);*/
+    tft.drawLine(xPos,yPos+14,xPos+8,yPos+6,0x9DB7);
+    tft.drawLine(xPos,yPos+15,xPos+15,yPos,0x9DB7);
+    tft.drawLine(xPos+1,yPos+15,xPos+9,yPos+7,0x9DB7);
+    tft.drawFastHLine(xPos+10,yPos,2,0x9DB7);
+    tft.drawFastHLine(xPos+8,yPos+1,2,0x9DB7);
+    tft.drawFastHLine(xPos+7,yPos+2,2,0x9DB7);
+    tft.drawFastHLine(xPos+7,yPos+3,2,0x9DB7);
+    tft.drawFastHLine(xPos+8,yPos+4,5,0x9DB7);
+    tft.drawFastVLine(xPos+11,yPos+3,5,0x9DB7);
+    tft.drawFastHLine(xPos+12,yPos+7,2,0x9DB7);
+    tft.drawFastHLine(xPos+12,yPos+8,2,0x9DB7);
+    tft.drawFastVLine(xPos+14,yPos+6,2,0x9DB7);
+    tft.drawFastVLine(xPos+15,yPos+4,2,0x9DB7);
   }
   //Walls
   else if((tileType >= 10 && tileType <= 13)) {
@@ -1047,7 +1050,51 @@ void drawTile(int xPos,int yPos,int tileType) {
   }
   //Water
   else if(tileType ==14){
-    tft.fillRect(xPos,yPos,spacing,spacing,0x19D9);
+    int waterColour = 0x1412;
+    tft.fillRect(xPos,yPos,spacing,spacing,0x02D4);
+    tft.drawFastVLine(xPos+8,yPos,2,waterColour);
+    tft.drawFastVLine(xPos+9,yPos+1,2,waterColour);
+    tft.drawPixel(xPos+10,yPos+2,waterColour);
+    tft.drawFastHLine(xPos+11,yPos+3,3,waterColour);
+    tft.drawFastHLine(xPos+14,yPos+4,2,waterColour);
+    tft.drawPixel(xPos+15,yPos+5,waterColour);
+    
+    tft.drawPixel(xPos+2,yPos+1,waterColour);
+    tft.drawFastVLine(xPos+3,yPos,3,waterColour);
+    tft.drawFastHLine(xPos+3,yPos+1,4,waterColour);
+    tft.drawPixel(xPos+5,yPos+3,waterColour);
+    //tft.drawFastVLine(xPos+5,yPos+5,3,waterColour);
+    tft.drawFastHLine(xPos+6,yPos+4,3,waterColour);
+    tft.drawFastVLine(xPos+9,yPos+5,3,waterColour);
+    //otft.drawFastHLine(xPos+7,yPos+8,2,waterColour);
+    tft.drawPixel(xPos+10,yPos+6,waterColour);
+    tft.drawFastHLine(xPos+11,yPos+7,2,waterColour);
+    tft.drawPixel(xPos+12,yPos+8,waterColour);
+    tft.drawFastHLine(xPos+13,yPos+9,2,waterColour);
+    tft.drawPixel(xPos+15,yPos+10,waterColour);
+
+    tft.drawFastHLine(xPos,yPos+2,2,waterColour);
+    tft.drawPixel(xPos,yPos+3,waterColour);
+    tft.drawFastVLine(xPos,yPos+5,3,waterColour);
+    tft.drawPixel(xPos+1,yPos+7,waterColour);
+    tft.drawPixel(xPos+2,yPos+8,waterColour);
+    tft.drawPixel(xPos+4,yPos+8,waterColour);
+    tft.drawFastHLine(xPos+2,yPos+9,5,waterColour);
+    tft.drawFastHLine(xPos+5,yPos+10,4,waterColour);
+    tft.drawFastHLine(xPos+8,yPos+11,2,waterColour);
+    tft.drawFastHLine(xPos+10,yPos+12,2,waterColour);
+    tft.drawFastVLine(xPos+12,yPos+13,2,waterColour);
+    tft.drawPixel(xPos+13,yPos+14,waterColour);
+    tft.drawFastHLine(xPos+14,yPos+15,2,waterColour);
+
+    tft.drawFastHLine(xPos,yPos+12,3,waterColour);
+    tft.drawFastHLine(xPos+2,yPos+13,2,waterColour);
+    tft.drawPixel(xPos+4,yPos+14,waterColour);
+    tft.drawFastHLine(xPos+4,yPos+15,4,waterColour);
+    tft.drawPixel(xPos+7,yPos+12,waterColour);
+    tft.drawPixel(xPos+8,yPos+13,waterColour);
+    tft.drawFastVLine(xPos+9,yPos+14,2,waterColour);
+    
   }
   //Lava
   else if(tileType == 15){
@@ -1955,13 +2002,25 @@ void drawHero(int x,int y) {
       tft.fillRect(x*spacing,y*spacing+10,2,2,0xA000);
       tft.fillRect(x*spacing,y*spacing+2,2,7,0xDEDB);
     }
-    else{
+    else if(weapon == 1){
       //Draw Spear
       tft.drawFastVLine(x*spacing+1,y*spacing,2,0x9DB7);
       tft.drawFastVLine(x*spacing+2,y*spacing+1,5,0x9DB7);
       tft.drawFastVLine(x*spacing+1,y*spacing+5,2,0x9DB7);
       tft.drawFastVLine(x*spacing,y*spacing+3,5,0x9DB7);
       tft.drawFastVLine(x*spacing,y*spacing+10,4,0x9DB7);
+    }
+    else if(weapon == 2){
+      //Draw Bow
+      tft.fillRect(x*spacing,y*spacing+6,2,2,0xC440);
+      tft.fillRect(x*spacing,y*spacing+10,2,2,0xC440);
+      tft.drawFastHLine(x*spacing,y*spacing+5,2,0xA513);
+      tft.drawFastHLine(x*spacing+1,y*spacing+4,2,0xA513);
+      tft.drawFastHLine(x*spacing+2,y*spacing+3,2,0xA513);
+      tft.drawFastHLine(x*spacing,y*spacing+12,2,0xA513);
+      tft.drawFastHLine(x*spacing+1,y*spacing+13,2,0xA513);
+      tft.drawFastHLine(x*spacing+2,y*spacing+14,2,0xA513);
+      tft.drawFastVLine(x*spacing+3,y*spacing+4,10,0xFFFF);
     }
   //Hero facing up  
   }
@@ -1993,7 +2052,7 @@ void drawHero(int x,int y) {
       tft.fillRect(x*spacing+1,y*spacing+11,2,2,0xA000);
       tft.fillRect(x*spacing+1,y*spacing+1,2,7,0xDEDB);
     }
-    else{
+    else if(weapon == 1){
       //Draw Spear
       tft.drawFastVLine(x*spacing+1,y*spacing+1,2,0x9DB7);
       tft.drawPixel(x*spacing+3,y*spacing+1,0x9DB7);
@@ -2002,6 +2061,17 @@ void drawHero(int x,int y) {
       tft.drawFastVLine(x*spacing+2,y*spacing+4,5,0x9DB7);
       tft.drawFastVLine(x*spacing+3,y*spacing+6,2,0x9DB7);
       tft.drawFastVLine(x*spacing+2,y*spacing+11,4,0x9DB7);
+    }
+    else if(weapon == 2) {
+      //Draw Bow
+      tft.drawFastVLine(x*spacing+1,y*spacing+7,2,0xC440);
+      tft.drawFastVLine(x*spacing+1,y*spacing+11,2,0xC440);
+      tft.drawFastHLine(x*spacing+1,y*spacing+4,2,0xA513);
+      tft.drawFastVLine(x*spacing+1,y*spacing+5,2,0xA513);
+      tft.drawFastVLine(x*spacing+1,y*spacing+13,2,0xA513);
+      tft.drawFastHLine(x*spacing+1,y*spacing+15,2,0xA513);
+      tft.drawFastVLine(x*spacing+2,y*spacing+5,4,0xFFFF);
+      tft.drawFastVLine(x*spacing+2,y*spacing+11,4,0xFFFF);
     }
   //Hero facing right  
   }
@@ -2043,13 +2113,25 @@ void drawHero(int x,int y) {
       tft.fillRect(x*spacing+14,y*spacing+10,2,2,0xA000);
       tft.fillRect(x*spacing+14,y*spacing+2,2,7,0xDEDB);
     }
-    else{
+    else if(weapon == 1) {
       //Draw Spear
       tft.drawFastVLine(x*spacing+14,y*spacing,2,0x9DB7);
       tft.drawFastVLine(x*spacing+13,y*spacing+1,5,0x9DB7);
       tft.drawFastVLine(x*spacing+14,y*spacing+5,2,0x9DB7);
       tft.drawFastVLine(x*spacing+15,y*spacing+3,5,0x9DB7);
       tft.drawFastVLine(x*spacing+15,y*spacing+10,4,0x9DB7);
+    }
+    else if(weapon == 2){
+      //Draw Bow
+      tft.fillRect(x*spacing+14,y*spacing+6,2,2,0xC440);
+      tft.fillRect(x*spacing+14,y*spacing+10,2,2,0xC440);
+      tft.drawFastHLine(x*spacing+14,y*spacing+5,2,0xA513);
+      tft.drawFastHLine(x*spacing+13,y*spacing+4,2,0xA513);
+      tft.drawFastHLine(x*spacing+12,y*spacing+3,2,0xA513);
+      tft.drawFastHLine(x*spacing+14,y*spacing+12,2,0xA513);
+      tft.drawFastHLine(x*spacing+13,y*spacing+13,2,0xA513);
+      tft.drawFastHLine(x*spacing+12,y*spacing+14,2,0xA513);
+      tft.drawFastVLine(x*spacing+12,y*spacing+4,10,0xFFFF);
     }
   //Hero facing down  
   }
@@ -2088,7 +2170,7 @@ void drawHero(int x,int y) {
       tft.fillRect(x*spacing+13,y*spacing+11,2,2,0xA000);
       tft.fillRect(x*spacing+13,y*spacing+1,2,7,0xDEDB);
     }
-    else{
+    else if(weapon ==1) {
       //Draw Spear
       tft.drawFastVLine(x*spacing+12,y*spacing+1,2,0x9DB7);
       tft.drawFastVLine(x*spacing+14,y*spacing+1,2,0x9DB7);
@@ -2098,6 +2180,13 @@ void drawHero(int x,int y) {
       tft.drawFastVLine(x*spacing+14,y*spacing+6,2,0x9DB7);
       tft.drawFastVLine(x*spacing+13,y*spacing+4,5,0x9DB7);
       tft.drawFastVLine(x*spacing+13,y*spacing+11,4,0x9DB7);
+    }
+    else if(weapon == 2) {
+      //Draw Bow
+      tft.fillRect(x*spacing+13,y*spacing+7,2,2,0xC440);
+      tft.fillRect(x*spacing+13,y*spacing+11,2,2,0xC440);
+      tft.fillRect(x*spacing+13,y*spacing+4,2,2,0xA513);
+      tft.fillRect(x*spacing+13,y*spacing+13,2,2,0xA513);
     }
   }
 }

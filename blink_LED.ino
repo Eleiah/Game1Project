@@ -699,9 +699,11 @@ void enemyMove(int i) {
    drawEnemy(i);
 }
 
+
 void bossMechanics(int mechanicNum) {
+  
   if(mechanicNum == 0){
-    if(random(10) == 0 && Characters[0].cTile == 2) {
+    if(random(bossLavaRate) == 0 && Characters[0].cTile == 2) {
       Characters[0].cTile = 50;
       drawHero(Characters[0].posX,Characters[0].posY);
     }
@@ -726,7 +728,7 @@ void bossMechanics(int mechanicNum) {
     //Place Random Lava
     for(int i = 0;i<15;i++) {
       for(int j = 0;j<15;j++) {
-        if(wMap[wRow][wCol][i][j] == 2  && random(10) == 0  ) {
+        if(wMap[wRow][wCol][i][j] == 2  && random(bossLavaRate) == 0  ) {
           wMap[wRow][wCol][i][j] = 50;
           drawTile(i*spacing,j*spacing,wMap[wRow][wCol][i][j]);
         }
@@ -812,7 +814,7 @@ void bossMechanics(int mechanicNum) {
         }
       }
     }
-   
+    
     for(int i = 6;i<9;i++) {
       if(wMap[wRow][wCol][i][3] != 42) {
         if(wMap[wRow][wCol][i][3] == 2) {
@@ -848,7 +850,111 @@ void bossMechanics(int mechanicNum) {
       }
     }
   }
+  else if(mechanicNum == 2) {
+    for(int i = 2;i<5;i++) {
+      if(wMap[wRow][wCol][4][i] != 42) {
+        if(wMap[wRow][wCol][4][i] == 2) {
+          wMap[wRow][wCol][4][i] = 50;
+          drawTile(4*spacing,i*spacing,wMap[wRow][wCol][4][i]);
+        }
+        else if(wMap[wRow][wCol][4][i] < 52) {
+          wMap[wRow][wCol][4][i]++;
+          drawTile(4*spacing,i*spacing,wMap[wRow][wCol][4][i]);
+        }
+        else if(wMap[wRow][wCol][4][i] == 52) {
+          wMap[wRow][wCol][4][i] = 2;
+          drawTile(4*spacing,i*spacing,wMap[wRow][wCol][4][i]);
+        }
+      }
+      else {
+        if(Characters[0].cTile == 2) {
+          Characters[0].cTile = 50;
+          drawHero(Characters[0].posX,Characters[0].posY);
+        }
+        else if(Characters[0].cTile < 52) {
+          Characters[0].cTile++;
+          drawHero(Characters[0].posX,Characters[0].posY);
+          Characters[0].health -= 2;
+          hearts();
+        }
+        else {
+          Characters[0].cTile = 2;
+          drawHero(Characters[0].posX,Characters[0].posY);
+          Characters[0].health -= 2;
+          hearts();
+        }
+      }
+      if(wMap[wRow][wCol][10][i] != 42) {
+        if(wMap[wRow][wCol][10][i] == 2) {
+          wMap[wRow][wCol][10][i] = 50;
+          drawTile(10*spacing,i*spacing,wMap[wRow][wCol][10][i]);
+        }
+        else if(wMap[wRow][wCol][10][i] < 52) {
+          wMap[wRow][wCol][10][i]++;
+          drawTile(10*spacing,i*spacing,wMap[wRow][wCol][10][i]);
+        }
+        else if(wMap[wRow][wCol][10][i] == 52) {
+          wMap[wRow][wCol][10][i] = 2;
+          drawTile(10*spacing,i*spacing,wMap[wRow][wCol][10][i]);
+        }
+      }
+      else {
+        if(Characters[0].cTile == 2) {
+          Characters[0].cTile = 50;
+          drawHero(Characters[0].posX,Characters[0].posY);
+        }
+        else if(Characters[0].cTile < 52) {
+          Characters[0].cTile++;
+          drawHero(Characters[0].posX,Characters[0].posY);
+          Characters[0].health -= 2;
+          hearts();
+        }
+        else {
+          Characters[0].cTile = 2;
+          drawHero(Characters[0].posX,Characters[0].posY);
+          Characters[0].health -= 2;
+          hearts();
+        }
+      }
+    }
+    
+    for(int i = 5;i<10;i++) {
+      if(wMap[wRow][wCol][i][4] != 42) {
+        if(wMap[wRow][wCol][i][4] == 2) {
+          wMap[wRow][wCol][i][4] = 50;
+          drawTile(i*spacing,4*spacing,wMap[wRow][wCol][i][4]);
+        }
+        else if(wMap[wRow][wCol][i][4] < 52) {
+          wMap[wRow][wCol][i][4]++;
+          drawTile(i*spacing,4*spacing,wMap[wRow][wCol][i][4]);
+        }
+        else if(wMap[wRow][wCol][i][4] == 52) {
+          wMap[wRow][wCol][i][4] = 2;
+          drawTile(i*spacing,4*spacing,wMap[wRow][wCol][i][4]);
+        }
+      }
+      else {
+        if(Characters[0].cTile == 2) {
+          Characters[0].cTile = 50;
+          drawHero(Characters[0].posX,Characters[0].posY);
+        }
+        else if(Characters[0].cTile < 52) {
+          Characters[0].cTile++;
+          drawHero(Characters[0].posX,Characters[0].posY);
+          Characters[0].health -= 2;
+          hearts();
+        }
+        else {
+          Characters[0].cTile = 2;
+          drawHero(Characters[0].posX,Characters[0].posY);
+          Characters[0].health -= 2;
+          hearts();
+        }
+      }
+    }
+  }
 }
+
 
 float charDistance(int charX,int charY) {
    return sqrt(pow((Characters[0].posX - charX),2) + pow((Characters[0].posY-charY),2));

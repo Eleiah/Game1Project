@@ -217,9 +217,9 @@ int wCol = 1;
 int weapon = 0;
 const int ENEMYCOUNT = 21;
 const int BREAKABLECOUNT = 13;
-int bossHp = 20;
+int bossHp = 30;
 bool bossRoom = false;
-int bossLavaRate = 10;
+int bossLavaRate = 6;
 int weapons = 1;
 
 void setup() {
@@ -230,33 +230,33 @@ void setup() {
   Characters[0].properties(0,2,2,3,2,1,24,1,0);
   // Characters of types 1 through 5 are enemies
   // Top left enemies
-  Characters[1].properties(2,7,4,0,0,0,5,1,0);
-  Characters[2].properties(1,4,8,0,0,0,3,1,0);
-  Characters[3].properties(1,10,8,0,0,0,3,1,0);
+  Characters[1].properties(2,7,4,0,0,0,7,1,0);
+  Characters[2].properties(1,4,8,0,0,0,4,1,0);
+  Characters[3].properties(1,10,8,0,0,0,4,1,0);
   // Top right enemies
-  Characters[4].properties(4,3,4,0,0,2,5,1,0);
-  Characters[5].properties(3,11,3,0,0,2,3,1,0);
-  Characters[6].properties(3,2,8,0,0,2,3,1,0);
-  Characters[7].properties(4,12,8,0,0,2,5,1,0);
+  Characters[4].properties(4,3,4,0,0,2,7,1,0);
+  Characters[5].properties(3,11,3,0,0,2,4,1,0);
+  Characters[6].properties(3,2,8,0,0,2,4,1,0);
+  Characters[7].properties(4,12,8,0,0,2,7,1,0);
   // Middle left enemies
-  Characters[8].properties(1,2,2,0,1,0,3,1,0);
-  Characters[9].properties(2,12,2,0,1,0,5,1,0);
+  Characters[8].properties(1,2,2,0,1,0,4,1,0);
+  Characters[9].properties(2,12,2,0,1,0,7,1,0);
   // Middle right enemies
-  Characters[10].properties(3,5,3,0,1,2,3,1,0);
-  Characters[11].properties(4,12,4,0,1,2,5,1,0);
-  Characters[12].properties(3,4,10,0,1,2,3,1,0);
+  Characters[10].properties(3,5,3,0,1,2,4,1,0);
+  Characters[11].properties(4,12,4,0,1,2,7,1,0);
+  Characters[12].properties(3,4,10,0,1,2,4,1,0);
   // Bottom left enemies
-  Characters[13].properties(1,5,2,0,2,0,3,1,0);
-  Characters[14].properties(1,9,2,0,2,0,3,1,0);
-  Characters[15].properties(1,3,7,0,2,0,3,1,0);
-  Characters[16].properties(1,7,10,0,2,0,3,1,0);
+  Characters[13].properties(1,5,2,0,2,0,4,1,0);
+  Characters[14].properties(1,9,2,0,2,0,4,1,0);
+  Characters[15].properties(1,3,7,0,2,0,4,1,0);
+  Characters[16].properties(1,7,10,0,2,0,4,1,0);
   // Bottom centre enemies
-  Characters[17].properties(5,13,2,1,2,1,3,1,0);
-  Characters[18].properties(5,2,13,3,2,1,3,1,0);
+  Characters[17].properties(5,13,2,1,2,1,4,1,0);
+  Characters[18].properties(5,2,13,3,2,1,4,1,0);
   // Bottom right enemies
-  Characters[19].properties(3,5,3,0,2,2,3,1,0);
-  Characters[20].properties(3,12,5,0,2,2,3,1,0);
-  Characters[21].properties(3,9,12,0,2,2,3,1,0);
+  Characters[19].properties(3,5,3,0,2,2,4,1,0);
+  Characters[20].properties(3,12,5,0,2,2,4,1,0);
+  Characters[21].properties(3,9,12,0,2,2,4,1,0);
   // Characters of type 6 are pots
   // Bottom left pots
   Characters[22].properties(8,0,0,0,0,0,0,0,10);
@@ -325,12 +325,6 @@ void loop() {
       drawHero(Characters[0].posX,Characters[0].posY);
     }
   }
-  if (weapon == 0)
-    drawTile(17*spacing, 5*spacing, 14);
-  if (weapon == 1)
-    drawTile(17*spacing, 5*spacing, 15);
-  if (weapon == 2)
-    drawTile(17*spacing, 5*spacing, 0);
   lastWeaponState = weaponState;
   //If the move button's state changes
   if((moveState && !lastMoveState) && Characters[0].health>0) {
@@ -454,7 +448,7 @@ void heroAttack(){
     }
     if(wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] >= 100){
       int currentEnemy = wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]]-100;
-      Characters[currentEnemy].health -= 2;
+      Characters[currentEnemy].health -= 3;
       if(Characters[currentEnemy].health <= 0) {
         Characters[currentEnemy].cStatus = 0;
         if (Characters[currentEnemy].type < 6)
@@ -472,15 +466,19 @@ void heroAttack(){
       bossHp -= 3;
       if (bossHp <= 12) {
         bossLavaRate = 2;
+        bossEnrage();
       }
       if(bossHp <= 0){
+        magmaClear();
         Characters[0].health = 0;
         tft.setCursor(58,116);
         tft.setTextSize(3);
         tft.setTextColor(0xFFFF);
         tft.print("YOU WON");
       }
-      bossMechanics(1);
+      if(bossHp > 0){
+        bossMechanics(1);
+      }
     }
   }
   else if (weapon == 1) {
@@ -489,7 +487,7 @@ void heroAttack(){
     }
     if(wMap[wRow][wCol][Characters[0].posX + 2*attacks[0]][Characters[0].posY + 2*attacks[1]] >= 100){
       int currentEnemy = wMap[wRow][wCol][Characters[0].posX + 2*attacks[0]][Characters[0].posY + 2*attacks[1]]-100;
-      Characters[currentEnemy].health--;
+      Characters[currentEnemy].health-=2;
       if(Characters[currentEnemy].health <= 0) {
         Characters[currentEnemy].cStatus = 0;
         if (Characters[currentEnemy].type < 6)
@@ -507,15 +505,19 @@ void heroAttack(){
       bossHp -= 2;
       if (bossHp <= 12) {
         bossLavaRate = 2;
+        bossEnrage();
       }
       if(bossHp <= 0){
+        magmaClear();
         Characters[0].health = 0;
         tft.setCursor(58,116);
         tft.setTextSize(3);
         tft.setTextColor(0xFFFF);
         tft.print("YOU WON");
       }
-      bossMechanics(2);
+      if(bossHp > 0){
+        bossMechanics(2);
+      }
     }
   }
   else if (weapon == 2) {
@@ -523,9 +525,11 @@ void heroAttack(){
       bossMechanics(0);
     }
     int i = 0;
-    while(wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] < 10 || wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] == 14 || wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] == 15 || (wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] >= 50 && wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] <= 59) || wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] == 42) {
+    bool enemyHit = false;
+    while(!enemyHit && Characters[0].posX + i*attacks[0] < 13 && (wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] < 10 || wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] == 14 || wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] == 15 || (wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] >= 50 && wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] <= 59) || wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] == 42)) {
       i++;
       if (wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] >= 100) {
+        enemyHit = true;
         int currentEnemy = wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]]-100;
         Characters[currentEnemy].health--;
         if(Characters[currentEnemy].health <= 0) {
@@ -543,15 +547,23 @@ void heroAttack(){
       }
       else if(wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] >= 60 && wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] <= 68) {
         bossHp--;
+        if ((Characters[0].row == 0 && Characters[0].col == 1) && bossRoom == false) {
+          bossRoom = true;
+        }
         if (bossHp <= 12) {
           bossLavaRate = 2;
+          bossEnrage();
         }
         if(bossHp <= 0){
+          magmaClear();
           Characters[0].health = 0;
           tft.setCursor(58,116);
           tft.setTextSize(3);
           tft.setTextColor(0xFFFF);
           tft.print("YOU WON");
+        }
+        if(bossHp > 0){
+          bossMechanics(3);
         }
       }
       else if (wMap[wRow][wCol][Characters[0].posX + (i+1)*attacks[0]][Characters[0].posY + (i+1)*attacks[1]] < 10 || wMap[wRow][wCol][Characters[0].posX + (i+1)*attacks[0]][Characters[0].posY + (i+1)*attacks[1]] == 14 || wMap[wRow][wCol][Characters[0].posX + (i+1)*attacks[0]][Characters[0].posY + (i+1)*attacks[1]] == 15 || (wMap[wRow][wCol][Characters[0].posX + (i+1)*attacks[0]][Characters[0].posY + (i+1)*attacks[1]] >= 50 && wMap[wRow][wCol][Characters[0].posX + (i+1)*attacks[0]][Characters[0].posY + (i+1)*attacks[1]] <= 59)){
@@ -562,6 +574,38 @@ void heroAttack(){
       }
     }
   }
+}
+
+void bossEnrage() {
+  for(int i = 0;i<15;i++) {
+    for(int j = 0;j<15;j++) {
+      if(wMap[wRow][wCol][i][j] == 16) {
+        wMap[wRow][wCol][i][j] = 51;
+        drawTile(i*spacing,j*spacing,wMap[wRow][wCol][i][j]);
+      }
+    }
+  }
+}
+
+void magmaClear() {
+  for(int i = 0;i<15;i++) {
+    for(int j = 0;j<15;j++) {
+      if(wMap[wRow][wCol][i][j] == 50 || wMap[wRow][wCol][i][j] == 51 || wMap[wRow][wCol][i][j] == 52) {
+        wMap[wRow][wCol][i][j] = 2;
+        drawTile(i*spacing,j*spacing,wMap[wRow][wCol][i][j]);
+      }
+      if(wMap[wRow][wCol][i][j] >= 63 && wMap[wRow][wCol][i][j] <= 68) {
+        wMap[wRow][wCol][i][j] = 15;
+        drawTile(i*spacing,j*spacing,wMap[wRow][wCol][i][j]);
+      }
+      if(wMap[wRow][wCol][i][j] >= 60 && wMap[wRow][wCol][i][j] <= 62) {
+        wMap[wRow][wCol][i][j] = 10;
+        drawTile(i*spacing,j*spacing,wMap[wRow][wCol][i][j]);
+      }
+    }
+  }
+  Characters[0].cTile = 2;
+  drawHero(Characters[0].posX,Characters[0].posY);
 }
 
 void gameBorder() {
@@ -713,9 +757,15 @@ void enemyMove(int i) {
 }
 
 void bossMechanics(int mechanicNum) {
-  
-  if(mechanicNum == 0){
-    if(random(bossLavaRate) == 0 && Characters[0].cTile == 2) {
+  int rate = 0;
+  if(mechanicNum == 0 || mechanicNum == 3){
+    if(mechanicNum == 0) {
+      rate = bossLavaRate;
+    }
+    else {
+      rate = 2;
+    }
+    if(random(rate) == 0 && Characters[0].cTile == 2) {
       Characters[0].cTile = 50;
       drawHero(Characters[0].posX,Characters[0].posY);
     }
@@ -740,7 +790,7 @@ void bossMechanics(int mechanicNum) {
     //Place Random Lava
     for(int i = 0;i<15;i++) {
       for(int j = 0;j<15;j++) {
-        if(wMap[wRow][wCol][i][j] == 2  && random(bossLavaRate) == 0  ) {
+        if(wMap[wRow][wCol][i][j] == 2  && random(rate) == 0  ) {
           wMap[wRow][wCol][i][j] = 50;
           drawTile(i*spacing,j*spacing,wMap[wRow][wCol][i][j]);
         }

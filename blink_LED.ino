@@ -219,6 +219,7 @@ const int ENEMYCOUNT = 21;
 const int BREAKABLECOUNT = 13;
 int bossHp = 20;
 bool bossRoom = false;
+int bossLavaRate = 10;
 int weapons = 1;
 
 void setup() {
@@ -432,6 +433,9 @@ void heroMove() {
   if(Characters[0].posX <= 0 || Characters[0].posX >= 14 || Characters[0].posY <= 0 || Characters[0].posY >= 14){
     placeChar();
   }
+  if ((Characters[0].row == 0 && Characters[0].col == 1) && bossRoom == false && Characters[0].posY <= 10) {
+    bossRoom = true;
+  }
 }
 
 void heroAttack(){
@@ -465,7 +469,10 @@ void heroAttack(){
       }
     }
     else if(wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] >= 60 && wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] <= 68) {
-      bossHp -= 2;
+      bossHp -= 3;
+      if (bossHp <= 12) {
+        bossLavaRate = 2;
+      }
       if(bossHp <= 0){
         Characters[0].health = 0;
         tft.setCursor(58,116);
@@ -497,7 +504,10 @@ void heroAttack(){
       }
     }
     else if(wMap[wRow][wCol][Characters[0].posX + 2*attacks[0]][Characters[0].posY + 2*attacks[1]] >= 60 && wMap[wRow][wCol][Characters[0].posX + 2*attacks[0]][Characters[0].posY + 2*attacks[1]] <= 68) {
-      bossHp--;
+      bossHp -= 2;
+      if (bossHp <= 12) {
+        bossLavaRate = 2;
+      }
       if(bossHp <= 0){
         Characters[0].health = 0;
         tft.setCursor(58,116);
@@ -533,6 +543,9 @@ void heroAttack(){
       }
       else if(wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] >= 60 && wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] <= 68) {
         bossHp--;
+        if (bossHp <= 12) {
+          bossLavaRate = 2;
+        }
         if(bossHp <= 0){
           Characters[0].health = 0;
           tft.setCursor(58,116);
@@ -698,7 +711,6 @@ void enemyMove(int i) {
    Characters[i].posY = column;
    drawEnemy(i);
 }
-
 
 void bossMechanics(int mechanicNum) {
   
@@ -954,7 +966,6 @@ void bossMechanics(int mechanicNum) {
     }
   }
 }
-
 
 float charDistance(int charX,int charY) {
    return sqrt(pow((Characters[0].posX - charX),2) + pow((Characters[0].posY-charY),2));

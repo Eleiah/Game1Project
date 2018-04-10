@@ -56,17 +56,17 @@ class ROOM
 
 int wMap[3][3][15][15] = {{{{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //L Room 3
                             {10,14,14,14,14,14,14,14,14,14,14,14,14,14,10},
-                            {10,14,14,14,14,0,0,0,0,0,0,14,14,14,10},
-                            {10,14,14,0,0,0,0,0,0,0,0,0,14,14,10},
-                            {10,14,0,0,0,0,0,0,0,0,0,0,14,14,10},
-                            {10,14,0,0,0,0,0,0,0,0,0,0,14,14,10},
-                            {10,14,0,0,0,0,0,0,0,0,0,0,0,14,10},
-                            {10,14,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                            {10,14,0,0,0,0,0,0,0,0,0,0,0,14,10},
-                            {10,14,0,0,0,0,0,0,0,0,0,0,14,14,10},
-                            {10,14,0,0,0,0,0,0,0,0,0,0,14,14,10},
-                            {10,14,14,0,0,0,0,0,0,0,0,0,14,14,10},
-                            {10,14,14,14,14,0,0,0,0,0,0,14,14,14,10},
+                            {10,14,14,14,14,1,1,1,1,1,1,14,14,14,10},
+                            {10,14,14,1,1,1,1,1,1,1,1,1,14,14,10},
+                            {10,14,1,1,1,1,1,1,1,1,1,1,14,14,10},
+                            {10,14,1,1,1,1,1,1,1,1,1,1,14,14,10},
+                            {10,14,1,1,1,1,1,1,1,1,1,1,1,14,10},
+                            {10,14,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                            {10,14,1,1,1,1,1,1,1,1,1,1,1,14,10},
+                            {10,14,1,1,1,1,1,1,1,1,1,1,14,14,10},
+                            {10,14,1,1,1,1,1,1,1,1,1,1,14,14,10},
+                            {10,14,14,1,1,1,1,1,1,1,1,1,14,14,10},
+                            {10,14,14,14,14,1,1,1,1,1,1,14,14,14,10},
                             {10,14,14,14,14,14,14,14,14,14,14,14,14,14,10},
                             {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}},
                          
@@ -108,9 +108,9 @@ int wMap[3][3][15][15] = {{{{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //L 
                             {10,0,0,0,0,1,14,14,14,14,14,14,14,0,10},
                             {10,0,0,14,14,1,1,14,10,14,14,14,14,0,10},
                             {10,0,14,14,14,14,1,0,10,10,14,14,14,0,10},
-                            {10,14,14,14,14,14,10,0,0,10,0,14,14,0,10},
-                            {0,0,1,1,1,1,0,0,0,10,7,1,1,0,0},
-                            {10,14,14,14,14,14,10,0,0,10,0,14,14,0,10},
+                            {10,14,14,14,14,14,10,0,0,10,1,14,14,0,10},
+                            {1,1,14,14,14,14,0,0,0,10,7,14,14,0,0},
+                            {10,14,14,14,14,14,10,0,0,10,1,14,14,0,10},
                             {10,0,14,14,14,14,1,0,10,10,14,14,14,0,10},
                             {10,0,0,14,14,1,1,14,10,14,14,14,14,0,10},
                             {10,0,0,0,0,1,14,14,14,14,14,14,14,0,10},
@@ -124,9 +124,9 @@ int wMap[3][3][15][15] = {{{{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //L 
                             {10,15,15,15,15,15,15,15,15,15,15,15,15,15,10},
                             {10,15,15,15,15,15,15,15,15,15,15,15,15,15,10},
                             {10,10,5,5,15,15,15,15,15,15,15,15,15,10,10},
-                            {2,2,1,1,1,1,1,1,1,1,1,1,1,0,10},
-                            {2,2,1,1,1,1,1,1,1,1,1,1,1,0,0},
-                            {2,2,1,1,1,1,1,1,1,1,1,1,1,0,10},
+                            {2,2,1,1,15,15,15,15,15,15,15,15,1,0,10},
+                            {2,2,1,1,15,15,15,15,15,15,15,15,1,0,0},
+                            {2,2,1,1,15,15,15,15,15,15,15,15,1,0,10},
                             {10,10,5,5,15,15,15,15,15,15,15,15,15,10,10},
                             {10,15,15,15,15,15,15,15,15,15,15,15,15,15,10},
                             {10,15,15,15,15,15,15,15,15,15,15,15,15,15,10},
@@ -135,9 +135,9 @@ int wMap[3][3][15][15] = {{{{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //L 
                             {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}},
 
                            {{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //D Room 2
-                            {10,0,0,12,12,12,12,12,12,12,12,12,0,0,10},
-                            {10,0,0,0,12,12,12,12,12,12,12,0,0,0,10},
-                            {10,0,0,0,0,12,12,12,12,12,0,0,0,0,10},
+                            {10,0,0,12,12,0,0,7,0,0,12,12,0,0,10},
+                            {10,0,0,0,12,12,0,0,0,12,12,0,0,0,10},
+                            {10,0,0,0,0,12,12,0,12,12,0,0,0,0,10},
                             {10,0,3,0,0,0,12,12,12,0,0,0,3,0,10},
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
@@ -157,29 +157,29 @@ int wMap[3][3][15][15] = {{{{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //L 
                             {10,0,0,0,10,0,0,0,0,0,10,0,0,0,10},
                             {10,0,0,0,0,0,0,10,0,0,0,0,0,0,10},
                             {10,0,0,0,0,0,14,14,14,0,0,0,0,0,10},
-                            {0,0,0,0,0,10,14,14,14,10,0,0,0,0,10},
+                            {10,0,0,0,0,10,14,14,14,10,0,0,0,0,10},
                             {10,0,0,0,0,0,14,14,14,0,0,0,0,0,10},
                             {10,0,0,0,0,0,0,10,0,0,0,0,0,0,10},
                             {10,0,0,0,10,0,0,0,0,0,10,0,0,0,10},
                             {10,14,0,0,0,0,0,0,0,0,0,0,0,14,10},
                             {10,14,14,0,0,0,0,0,0,0,0,0,14,14,10},
                             {10,14,14,14,0,0,0,0,0,0,0,14,14,14,10},
-                            {10,10,10,10,10,10,10,0,10,10,10,10,10,10,10}},
+                            {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}},
 
                            {{10,10,10,10,10,10,10,0,10,10,10,10,10,10,10}, //T Room 1
-                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
-                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
-                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
-                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,10,10,10,10,0,0,0,0,0,10,10,10,10,10},
+                            {10,10,10,0,0,0,0,0,0,0,0,0,10,10,10},
+                            {10,10,0,0,0,0,0,0,0,0,0,0,0,10,10},
+                            {10,10,0,0,0,0,0,0,0,0,0,0,0,10,10},
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
                             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
-                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
-                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
-                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
-                            {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
+                            {10,10,0,0,0,0,0,0,0,0,0,0,0,10,10},
+                            {10,10,0,0,0,0,0,0,0,0,0,0,0,10,10},
+                            {10,10,10,0,0,0,0,0,0,0,0,0,10,10,10},
+                            {10,10,10,10,10,0,0,0,0,0,10,10,10,10,10},
                             {10,10,10,10,10,10,10,0,10,10,10,10,10,10,10}},
 
                            {{10,10,10,10,10,10,10,0,10,10,10,10,10,10,10}, //D Room 1
@@ -217,7 +217,7 @@ int wCol = 1;
 int weapon = 0;
 const int ENEMYCOUNT = 21;
 const int BREAKABLECOUNT = 13;
-int bossHp = 30;
+int bossHP = 30;
 bool bossRoom = false;
 int bossLavaRate = 6;
 int weapons = 1;
@@ -227,12 +227,12 @@ void setup() {
   
   // Character properties: type,posX,posY,cDirection,row,col,health,cStatus,cTile
   // Character 0 is the Hero
-  Characters[0].properties(0,2,2,3,2,1,24,1,0);
+  Characters[0].properties(0,7,14,1,2,1,24,1,10);
   // Characters of types 1 through 5 are enemies
   // Top left enemies
-  Characters[1].properties(2,7,4,0,0,0,7,1,0);
-  Characters[2].properties(1,4,8,0,0,0,4,1,0);
-  Characters[3].properties(1,10,8,0,0,0,4,1,0);
+  Characters[1].properties(2,7,4,0,0,0,7,1,1);
+  Characters[2].properties(1,4,8,0,0,0,4,1,1);
+  Characters[3].properties(1,10,8,0,0,0,4,1,1);
   // Top right enemies
   Characters[4].properties(4,3,4,0,0,2,7,1,0);
   Characters[5].properties(3,11,3,0,0,2,4,1,0);
@@ -251,8 +251,8 @@ void setup() {
   Characters[15].properties(1,3,7,0,2,0,4,1,0);
   Characters[16].properties(1,7,10,0,2,0,4,1,0);
   // Bottom centre enemies
-  Characters[17].properties(5,13,2,1,2,1,4,1,0);
-  Characters[18].properties(5,2,13,3,2,1,4,1,0);
+  Characters[17].properties(5,11,3,1,2,1,4,1,0);
+  Characters[18].properties(5,3,8,3,2,1,4,1,0);
   // Bottom right enemies
   Characters[19].properties(3,5,3,0,2,2,4,1,0);
   Characters[20].properties(3,12,5,0,2,2,4,1,0);
@@ -274,6 +274,12 @@ void setup() {
   Characters[33].properties(7,7,6,0,0,2,1,1,0);
   // Middle left switch
   Characters[34].properties(7,7,8,0,1,0,1,1,0);
+  // ???
+  Characters[42].properties(6,13,11,0,2,1,1,1,0);  // Character properties: type,posX,posY,cDirection,row,col,health,cStatus,cTile
+  Characters[43].properties(6,13,12,0,2,1,1,1,0);
+  Characters[44].properties(6,13,13,0,2,1,1,1,0);
+  Characters[45].properties(6,12,13,0,2,1,1,1,0);
+  Characters[46].properties(6,12,14,0,2,1,1,1,0);
   // Room properties: enemies, switches, centre1X, centre1Y, centre2X, centre2Y, centre3X, centre3Y
   // Top Rooms
   Rooms[0][0].properties(3,4,7,7,0,0,0,0);
@@ -282,7 +288,7 @@ void setup() {
   // Middle Rooms
   Rooms[1][0].properties(2,1,13,7,0,7,0,0);
   Rooms[1][1].properties(0,0,7,7,0,0,0,0);
-  Rooms[1][2].properties(2,0,9,10,9,4,0,7);
+  Rooms[1][2].properties(3,0,9,10,9,4,0,7);
   // Bottom Rooms
   Rooms[2][0].properties(4,0,7,7,0,0,0,0);
   Rooms[2][1].properties(4,0,7,7,0,0,0,0);
@@ -304,6 +310,7 @@ void setup() {
   heroMove();
   enemiesMove();
   gameBorder();
+  placeBreakables();
 }
 
 void loop() {
@@ -383,6 +390,14 @@ void placeChar() {
    wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = 42;
    //Draw the hero
    drawHero(Characters[0].posX,Characters[0].posY);
+   if (wRow == 1 && wCol == 1 && Rooms[0][0].switches == 0 && Rooms[0][2].switches == 0) {
+     for (int i = 4; i < 12; i++) {
+      for (int j = 6; j < 9; j++) {
+        wMap[wRow][wCol][j][i] = 1;
+        drawTile(j*spacing, i*spacing, 1);
+      }
+     }
+   }
 }
 
 void heroMove() {
@@ -451,10 +466,14 @@ void heroAttack(){
       Characters[currentEnemy].health -= 3;
       if(Characters[currentEnemy].health <= 0) {
         Characters[currentEnemy].cStatus = 0;
-        if (Characters[currentEnemy].type < 6)
+        if (Characters[currentEnemy].type < 6) {
           Rooms[Characters[currentEnemy].row][Characters[currentEnemy].col].enemies--;
-        if (Characters[currentEnemy].type == 7)
+          checkRooms();
+        }
+        if (Characters[currentEnemy].type == 7) {
           Rooms[Characters[currentEnemy].row][Characters[currentEnemy].col].switches--;
+          checkRooms();
+        }
         if(random(8) == 0 && Characters[currentEnemy].type < 7){
           Characters[currentEnemy].cTile = 5;
         }
@@ -463,12 +482,12 @@ void heroAttack(){
       }
     }
     else if(wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] >= 60 && wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] <= 68) {
-      bossHp -= 3;
-      if (bossHp <= 12) {
+      bossHP -= 3;
+      if (bossHP <= 12) {
         bossLavaRate = 2;
         bossEnrage();
       }
-      if(bossHp <= 0){
+      if(bossHP <= 0) {
         magmaClear();
         Characters[0].health = 0;
         tft.setCursor(58,116);
@@ -476,7 +495,7 @@ void heroAttack(){
         tft.setTextColor(0xFFFF);
         tft.print("YOU WON");
       }
-      if(bossHp > 0){
+      if (bossHP > 0) {
         bossMechanics(1);
       }
     }
@@ -487,13 +506,17 @@ void heroAttack(){
     }
     if(wMap[wRow][wCol][Characters[0].posX + 2*attacks[0]][Characters[0].posY + 2*attacks[1]] >= 100){
       int currentEnemy = wMap[wRow][wCol][Characters[0].posX + 2*attacks[0]][Characters[0].posY + 2*attacks[1]]-100;
-      Characters[currentEnemy].health-=2;
+      Characters[currentEnemy].health -= 2;
       if(Characters[currentEnemy].health <= 0) {
         Characters[currentEnemy].cStatus = 0;
-        if (Characters[currentEnemy].type < 6)
+        if (Characters[currentEnemy].type < 6) {
           Rooms[Characters[currentEnemy].row][Characters[currentEnemy].col].enemies--;
-        if (Characters[currentEnemy].type == 7)
+          checkRooms();
+        }
+        if (Characters[currentEnemy].type == 7) {
           Rooms[Characters[currentEnemy].row][Characters[currentEnemy].col].switches--;
+          checkRooms();
+        }
         if(random(8) == 0 && Characters[currentEnemy].type < 7){
           Characters[currentEnemy].cTile = 5;
         }
@@ -502,12 +525,12 @@ void heroAttack(){
       }
     }
     else if(wMap[wRow][wCol][Characters[0].posX + 2*attacks[0]][Characters[0].posY + 2*attacks[1]] >= 60 && wMap[wRow][wCol][Characters[0].posX + 2*attacks[0]][Characters[0].posY + 2*attacks[1]] <= 68) {
-      bossHp -= 2;
-      if (bossHp <= 12) {
+      bossHP -= 2;
+      if (bossHP <= 12) {
         bossLavaRate = 2;
         bossEnrage();
       }
-      if(bossHp <= 0){
+      if(bossHP <= 0){
         magmaClear();
         Characters[0].health = 0;
         tft.setCursor(58,116);
@@ -515,7 +538,7 @@ void heroAttack(){
         tft.setTextColor(0xFFFF);
         tft.print("YOU WON");
       }
-      if(bossHp > 0){
+      if (bossHP > 0) {
         bossMechanics(2);
       }
     }
@@ -526,7 +549,7 @@ void heroAttack(){
     }
     int i = 0;
     bool enemyHit = false;
-    while(!enemyHit && Characters[0].posX + i*attacks[0] < 13 && (wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] < 10 || wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] == 14 || wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] == 15 || (wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] >= 50 && wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] <= 59) || wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] == 42)) {
+    while(!enemyHit && Characters[0].posX + i*attacks[0] < 14 && Characters[0].posY + i*attacks[1] > 0 && (wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] < 10 || wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] == 14 || wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] == 15 || (wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] >= 50 && wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] <= 59) || wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] == 42)) {
       i++;
       if (wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] >= 100) {
         enemyHit = true;
@@ -534,10 +557,14 @@ void heroAttack(){
         Characters[currentEnemy].health--;
         if(Characters[currentEnemy].health <= 0) {
           Characters[currentEnemy].cStatus = 0;
-          if (Characters[currentEnemy].type < 6)
+          if (Characters[currentEnemy].type < 6) {
             Rooms[Characters[currentEnemy].row][Characters[currentEnemy].col].enemies--;
-          if (Characters[currentEnemy].type == 7)
+            checkRooms();
+          }
+          if (Characters[currentEnemy].type == 7) {
             Rooms[Characters[currentEnemy].row][Characters[currentEnemy].col].switches--;
+            checkRooms();
+          }
           if(random(8) == 0 && Characters[currentEnemy].type < 7){
             Characters[currentEnemy].cTile = 5;
           }
@@ -546,15 +573,15 @@ void heroAttack(){
         }
       }
       else if(wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] >= 60 && wMap[wRow][wCol][Characters[0].posX + i*attacks[0]][Characters[0].posY + i*attacks[1]] <= 68) {
-        bossHp--;
+        bossHP--;
         if ((Characters[0].row == 0 && Characters[0].col == 1) && bossRoom == false) {
           bossRoom = true;
         }
-        if (bossHp <= 12) {
+        if (bossHP <= 12) {
           bossLavaRate = 2;
           bossEnrage();
         }
-        if(bossHp <= 0){
+        if(bossHP <= 0){
           magmaClear();
           Characters[0].health = 0;
           tft.setCursor(58,116);
@@ -562,7 +589,7 @@ void heroAttack(){
           tft.setTextColor(0xFFFF);
           tft.print("YOU WON");
         }
-        if(bossHp > 0){
+        if(bossHP > 0){
           bossMechanics(3);
         }
       }
@@ -608,6 +635,7 @@ void magmaClear() {
   drawHero(Characters[0].posX,Characters[0].posY);
 }
 
+
 void gameBorder() {
   int borderColour = 0x096F;
   tft.fillRect(15*spacing,0*spacing,spacing*5,spacing,borderColour);
@@ -652,6 +680,12 @@ void placeBreakables() {
     if (Characters[i].row == wRow && Characters[i].col == wCol && Characters[i].cStatus == 1) {
       wMap[wRow][wCol][Characters[i].posX][Characters[i].posY] = i + 100;
       drawBreakable(i);
+    }
+  }
+  for (int i = 42; i < 47; i++) {
+    if (Characters[i].row == wRow && Characters[i].col == wCol && Characters[i].cStatus == 1) {
+      wMap[wRow][wCol][Characters[i].posX][Characters[i].posY] = i + 100;
+      drawTile(Characters[i].posX*spacing, Characters[i].posY*spacing, 10);
     }
   }
 }
@@ -1017,6 +1051,43 @@ void bossMechanics(int mechanicNum) {
   }
 }
 
+void checkRooms() {
+  if (Rooms[wRow][wCol].enemies == 0 ) {
+    if (wRow == 2 && wCol == 0) {
+      wMap[wRow][wCol][7][0] = 0;
+      drawTile(7*spacing, 0, 0);
+      wMap[wRow][wCol][14][7] = 0;
+      drawTile(14*spacing, 7*spacing, 0);
+    }
+    if (wRow == 1 && wCol == 2) {
+      wMap[wRow][wCol][4][7] = 0;
+      drawTile(4*spacing, 7*spacing, 0);
+    }
+  }
+  if (Rooms[wRow][wCol].switches == 0) {
+    if (wRow == 0 && wCol == 0) {
+      // Place heart container
+    }
+    else if (wRow == 0 && wCol == 2) {
+      // Place heart container
+    }
+    else if (wRow == 1 && wCol == 0) {
+      wMap[wRow][wCol][7][11] = 1;
+      drawTile(7*spacing, 11*spacing, 1);
+      wMap[wRow][wCol][7][12] = 1;
+      drawTile(7*spacing, 12*spacing, 1);
+      wMap[wRow][wCol][7][2] = 1;
+      drawTile(7*spacing, 2*spacing, 1);
+      wMap[wRow][wCol][7][3] = 1;
+      drawTile(7*spacing, 3*spacing, 1);
+      wMap[wRow][wCol][7][4] = 1;
+      drawTile(7*spacing, 4*spacing, 1);
+      wMap[wRow][wCol][7][5] = 1;
+      drawTile(7*spacing, 5*spacing, 1);
+    }
+  }
+}
+
 float charDistance(int charX,int charY) {
    return sqrt(pow((Characters[0].posX - charX),2) + pow((Characters[0].posY-charY),2));
 }
@@ -1057,42 +1128,46 @@ void drawArrow(int tilesMoved, int pixelsMoved) {
     tft.drawPixel(refX, refY + 7, 0xD000);
     tft.drawPixel(refX, refY + 9, 0xD000);
     if (wMap[wRow][wCol][Characters[0].posX - tilesMoved][Characters[0].posY] < 100)
-      drawTile((Characters[0].posX - tilesMoved)*spacing, refY, wMap[wRow][wCol][Characters[0].posX - tilesMoved][Characters[0].posY]);
+       drawTile((Characters[0].posX - tilesMoved)*spacing, refY, wMap[wRow][wCol][Characters[0].posX - tilesMoved][Characters[0].posY]);
     if (wMap[wRow][wCol][Characters[0].posX - tilesMoved - 1][Characters[0].posY] < 100)
-      drawTile((Characters[0].posX - tilesMoved - 1)*spacing, refY, wMap[wRow][wCol][Characters[0].posX - tilesMoved - 1][Characters[0].posY]);
-  }
+       drawTile((Characters[0].posX - tilesMoved - 1)*spacing, refY, wMap[wRow][wCol][Characters[0].posX - tilesMoved - 1][Characters[0].posY]);
+}
   else if (Characters[0].cDirection == 1) {
     int refX = (Characters[0].posX + 1)*spacing;
     int refY = (Characters[0].posY - tilesMoved)*spacing - pixelsMoved;
-    tft.drawFastVLine(refX - 7, refY + 3, 11, 0xC440);
-    tft.drawFastHLine(refX - 9, refY + 2, 5, 0xA513);
-    tft.drawFastHLine(refX - 8, refY + 1, 3, 0xA513);
-    tft.drawPixel(refX - 7, refY, 0xA513);
-    tft.drawFastHLine(refX - 8, refY + 14, 3, 0xD000);
-    tft.drawPixel(refX - 9, refY + 15, 0xD000);
-    tft.drawPixel(refX - 7, refY + 15, 0xD000);
-    tft.drawPixel(refX - 5, refY + 15, 0xD000);
+    if ((Characters[0].posY - tilesMoved - 1) > 0) {
+      tft.drawFastVLine(refX - 7, refY + 3, 11, 0xC440);
+      tft.drawFastHLine(refX - 9, refY + 2, 5, 0xA513);
+      tft.drawFastHLine(refX - 8, refY + 1, 3, 0xA513);
+      tft.drawPixel(refX - 7, refY, 0xA513);
+      tft.drawFastHLine(refX - 8, refY + 14, 3, 0xD000);
+      tft.drawPixel(refX - 9, refY + 15, 0xD000);
+      tft.drawPixel(refX - 7, refY + 15, 0xD000);
+      tft.drawPixel(refX - 5, refY + 15, 0xD000);
+    }
     if (wMap[wRow][wCol][Characters[0].posX][Characters[0].posY - tilesMoved] < 100)
-      drawTile(Characters[0].posX*spacing, (Characters[0].posY - tilesMoved)*spacing, wMap[wRow][wCol][Characters[0].posX][Characters[0].posY - tilesMoved]);
-    if (wMap[wRow][wCol][Characters[0].posX][Characters[0].posY - tilesMoved - 1] < 100)
-      drawTile(Characters[0].posX*spacing, (Characters[0].posY - tilesMoved - 1)*spacing, wMap[wRow][wCol][Characters[0].posX][Characters[0].posY - tilesMoved - 1]);
-  }
+       drawTile(Characters[0].posX*spacing, (Characters[0].posY - tilesMoved)*spacing, wMap[wRow][wCol][Characters[0].posX][Characters[0].posY - tilesMoved]);
+    if (wMap[wRow][wCol][Characters[0].posX][Characters[0].posY - tilesMoved - 1] < 100 && (Characters[0].posY - tilesMoved - 1) > 0)
+       drawTile(Characters[0].posX*spacing, (Characters[0].posY - tilesMoved - 1)*spacing, wMap[wRow][wCol][Characters[0].posX][Characters[0].posY - tilesMoved - 1]);
+}
   else if (Characters[0].cDirection == 2) {
     int refX = (Characters[0].posX + 1 + tilesMoved)*spacing + pixelsMoved;
     int refY = Characters[0].posY*spacing;
-    tft.drawFastHLine(refX - 13, refY + 7, 11, 0xC440);
-    tft.drawFastVLine(refX - 2, refY + 5, 5, 0xA513);
-    tft.drawFastVLine(refX - 1, refY + 6, 3, 0xA513);
-    tft.drawPixel(refX, refY + 7, 0xA513);
-    tft.drawFastVLine(refX - 14, refY + 6, 3, 0xD000);
-    tft.drawPixel(refX - 15, refY + 5, 0xD000);
-    tft.drawPixel(refX - 15, refY + 7, 0xD000);
-    tft.drawPixel(refX - 15, refY + 9, 0xD000);
+    if ((Characters[0].posX + tilesMoved + 1) < 14) {
+      tft.drawFastHLine(refX - 13, refY + 7, 11, 0xC440);
+      tft.drawFastVLine(refX - 2, refY + 5, 5, 0xA513);
+      tft.drawFastVLine(refX - 1, refY + 6, 3, 0xA513);
+      tft.drawPixel(refX, refY + 7, 0xA513);
+      tft.drawFastVLine(refX - 14, refY + 6, 3, 0xD000);
+      tft.drawPixel(refX - 15, refY + 5, 0xD000);
+      tft.drawPixel(refX - 15, refY + 7, 0xD000);
+      tft.drawPixel(refX - 15, refY + 9, 0xD000);
+    }
     if (wMap[wRow][wCol][Characters[0].posX + tilesMoved][Characters[0].posY] < 100)
-      drawTile((Characters[0].posX + tilesMoved)*spacing, refY, wMap[wRow][wCol][Characters[0].posX + tilesMoved][Characters[0].posY]);
-    if (wMap[wRow][wCol][Characters[0].posX + tilesMoved + 1][Characters[0].posY] < 100)
-      drawTile((Characters[0].posX + tilesMoved + 1)*spacing, refY, wMap[wRow][wCol][Characters[0].posX + tilesMoved + 1][Characters[0].posY]);
-  }
+       drawTile((Characters[0].posX + tilesMoved)*spacing, refY, wMap[wRow][wCol][Characters[0].posX + tilesMoved][Characters[0].posY]);
+    if (wMap[wRow][wCol][Characters[0].posX + tilesMoved + 1][Characters[0].posY] < 100 && (Characters[0].posX + tilesMoved + 1) < 14)
+       drawTile((Characters[0].posX + tilesMoved + 1)*spacing, refY, wMap[wRow][wCol][Characters[0].posX + tilesMoved + 1][Characters[0].posY]);
+}
   else if (Characters[0].cDirection == 3) {
     int refX = (Characters[0].posX + 1)*spacing;
     int refY = (Characters[0].posY + tilesMoved)*spacing + pixelsMoved;
@@ -1104,10 +1179,10 @@ void drawArrow(int tilesMoved, int pixelsMoved) {
     tft.drawPixel(refX - 9, refY, 0xD000);
     tft.drawPixel(refX - 7, refY, 0xD000);
     if (wMap[wRow][wCol][Characters[0].posX][Characters[0].posY + tilesMoved] < 100)
-      drawTile(Characters[0].posX*spacing, (Characters[0].posY + tilesMoved)*spacing, wMap[wRow][wCol][Characters[0].posX][Characters[0].posY + tilesMoved]);
+       drawTile(Characters[0].posX*spacing, (Characters[0].posY + tilesMoved)*spacing, wMap[wRow][wCol][Characters[0].posX][Characters[0].posY + tilesMoved]);
     if (wMap[wRow][wCol][Characters[0].posX][Characters[0].posY + tilesMoved + 1] < 100)
-      drawTile(Characters[0].posX*spacing, (Characters[0].posY + tilesMoved + 1)*spacing, wMap[wRow][wCol][Characters[0].posX][Characters[0].posY + tilesMoved + 1]);
-  }
+       drawTile(Characters[0].posX*spacing, (Characters[0].posY + tilesMoved + 1)*spacing, wMap[wRow][wCol][Characters[0].posX][Characters[0].posY + tilesMoved + 1]);
+}
 }
 
 void drawBreakable(int i) {
@@ -1158,6 +1233,8 @@ void drawBreakable(int i) {
   }
   else if (Characters[i].type == 6) {
     // Draw a pot
+    // Fill
+    tft.fillRoundRect(x + 3, y + 3, 10, 10, 3, 0x8AC6);
     // Outline
     tft.drawLine(x + 5, y + 2, x + 2, y + 5, ILI9340_BLACK);
     tft.drawLine(x + 10, y + 2, x + 13, y + 5, ILI9340_BLACK);
@@ -1176,6 +1253,7 @@ void drawBreakable(int i) {
     tft.drawFastHLine(x + 6, y + 6, 4, 0xED46);
     tft.drawFastVLine(x + 5, y + 3, 3, 0xED46);
     tft.drawFastVLine(x + 10, y + 3, 3, 0xED46);
+    tft.fillRoundRect(x + 6, y + 3, 4, 3, 2, ILI9340_BLACK);
   }
 }
 
@@ -1550,20 +1628,32 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.drawFastVLine(xPos+13,yPos+4,3,heartRed);
   }
   else if(tileType == 7) {
-    drawTile(xPos,yPos,0);
-    tft.drawLine(xPos,yPos+14,xPos+8,yPos+6,0x9DB7);
-    tft.drawLine(xPos,yPos+15,xPos+15,yPos,0x9DB7);
-    tft.drawLine(xPos+1,yPos+15,xPos+9,yPos+7,0x9DB7);
-    tft.drawFastHLine(xPos+10,yPos,2,0x9DB7);
-    tft.drawFastHLine(xPos+8,yPos+1,2,0x9DB7);
-    tft.drawFastHLine(xPos+7,yPos+2,2,0x9DB7);
-    tft.drawFastHLine(xPos+7,yPos+3,2,0x9DB7);
-    tft.drawFastHLine(xPos+8,yPos+4,5,0x9DB7);
-    tft.drawFastVLine(xPos+11,yPos+3,5,0x9DB7);
-    tft.drawFastHLine(xPos+12,yPos+7,2,0x9DB7);
-    tft.drawFastHLine(xPos+12,yPos+8,2,0x9DB7);
-    tft.drawFastVLine(xPos+14,yPos+6,2,0x9DB7);
-    tft.drawFastVLine(xPos+15,yPos+4,2,0x9DB7);
+    if (wCol == 0) {
+      drawTile(xPos,yPos,1);
+      tft.drawLine(xPos,yPos+14,xPos+8,yPos+6,0x9DB7);
+      tft.drawLine(xPos,yPos+15,xPos+15,yPos,0x9DB7);
+      tft.drawLine(xPos+1,yPos+15,xPos+9,yPos+7,0x9DB7);
+      tft.drawFastHLine(xPos+10,yPos,2,0x9DB7);
+      tft.drawFastHLine(xPos+8,yPos+1,2,0x9DB7);
+      tft.drawFastHLine(xPos+7,yPos+2,2,0x9DB7);
+      tft.drawFastHLine(xPos+7,yPos+3,2,0x9DB7);
+      tft.drawFastHLine(xPos+8,yPos+4,5,0x9DB7);
+      tft.drawFastVLine(xPos+11,yPos+3,5,0x9DB7);
+      tft.drawFastHLine(xPos+12,yPos+7,2,0x9DB7);
+      tft.drawFastHLine(xPos+12,yPos+8,2,0x9DB7);
+      tft.drawFastVLine(xPos+14,yPos+6,2,0x9DB7);
+      tft.drawFastVLine(xPos+15,yPos+4,2,0x9DB7);
+    }
+    if (wCol == 2) {
+      drawTile(xPos, yPos, 0);
+      tft.drawLine(xPos + 1, yPos + 11, xPos + 11, yPos + 1, 0xFFFF);
+      tft.drawLine(xPos + 6, yPos + 14,xPos + 14, yPos + 6, 0xC440);
+      tft.drawLine(xPos + 7, yPos + 14,xPos + 14, yPos + 7, 0xC440);
+      tft.drawLine(xPos, yPos + 12, xPos + 3, yPos + 14, 0xA513);
+      tft.drawLine(xPos + 12, yPos,xPos + 14, yPos + 3, 0xA513);
+      tft.drawFastHLine(xPos + 4, yPos + 14, 2, 0xA513);
+      tft.drawFastVLine(xPos + 14, yPos + 4, 2, 0xA513);
+    }
   }
   //Walls
   else if((tileType >= 10 && tileType <= 13)) {

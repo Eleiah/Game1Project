@@ -1,0 +1,166 @@
+#include <Wire.h>
+#include <SPI.h>
+#include <SD.h>
+#include <Adafruit_VS1053.h>
+
+#define SHIELD_RESET 9
+#define BREAKOUT_CS 10
+#define BREAKOUT_DCS 8
+#define SHIELD_CS 7
+#define SHIELD_DCS 6
+#define CARDCS 4
+#define DREQ 3
+
+Adafruit_VS1053_FilePlayer musicPlayer = Adafruit_VS1053_FilePlayer(SHIELD_CS,SHIELD_DCS,DREQ,CARDCS);//set up for the shield
+
+
+void printDirectory(File dir, int numTabs) {
+   while(true) {
+     
+     File entry =  dir.openNextFile();
+     if (! entry) {
+       // no more files
+       //Serial.println("**nomorefiles**");
+       break;
+     }
+     for (uint8_t i=0; i<numTabs; i++) {
+       Serial.print('\t');
+     }
+     Serial.print(entry.name());
+     if (entry.isDirectory()) {
+       Serial.println("/");
+       printDirectory(entry, numTabs+1);
+     } else {
+       // files have sizes, directories do not
+       Serial.print("\t\t");
+       Serial.println(entry.size(), DEC);
+     }
+     entry.close();
+   }
+}
+void receiveEvent(int howMany) {
+  /*if(Wire.read()==0){
+    room++;
+    musicPlayer.stopPlaying();
+    }*/
+    int x=Wire.read();
+  if(x==0){//Character gets hit
+    musicPlayer.playFullFile("getHit.mp3");
+    }
+   if(x==1){// sword hit sound
+    musicPlayer.playFullFile("swordH.mp3");
+    } 
+   if(x==2){// game over sounds
+    musicPlayer.playFullFile("Wilhelm.mp3");
+    musicPlayer.playFullFile("DeadR.mp3");
+    }
+   if(x==3){ //opening a door
+    musicPlayer.playFullFile("doorOpen.mp3");
+    } 
+   if(x==4){// unlock a door
+    musicPlayer.playFullFile("Unlock.mp3");
+    }    
+   if(x==5){//step in lava 
+    musicPlayer.playFullFile("lava.mp3");
+    } 
+   if(x==6){//step on acid trap
+    musicPlayer.setVolume(5,5);
+    musicPlayer.playFullFile("Acid.mp3");
+    musicPlayer.setVolume(15,15);
+    }  
+    if(x==7){// arrow hits enemy 
+    musicPlayer.playFullFile("AHit.mp3");
+    } 
+    if(x==8){// arrow misses/hits wall
+    musicPlayer.playFullFile("AMiss.mp3");
+    } 
+    if(x==9){// weapon hits boss
+    musicPlayer.playFullFile("BossHit.mp3");
+    } 
+    if(x==10){// shooting bow
+    musicPlayer.playFullFile("Bow.mp3");
+    } 
+    if(x==11){ //bridge being built
+    musicPlayer.playFullFile("BridgeB.wav");
+    } 
+    if(x==12){//bridge emerging from water
+    musicPlayer.playFullFile("BridgeW.mp3");
+    } 
+    if(x==13){// credits song
+    musicPlayer.playFullFile("Credits.mp3");
+    } 
+    if(x==14){// boss roar
+    musicPlayer.playFullFile("Enrage.mp3");
+    } 
+    if(x==15){// pick up heart sound
+    musicPlayer.playFullFile("HealthPU.mp3");
+    } 
+    if(x==16){// low hp warning
+    musicPlayer.playFullFile("lowHp.mp3");
+    } 
+    if(x==17){// new weapon sound
+    musicPlayer.setVolume(10,10);  
+    musicPlayer.playFullFile("NewITM.mp3");
+    musicPlayer.setVolume(15,15);
+    } 
+    if(x==18){// break a pot
+    musicPlayer.playFullFile("PotBreak.mp3");
+    } 
+    if(x==19){// finding a secret
+    musicPlayer.playFullFile("Secret.mp3");
+    } 
+    if(x==20){// spear hit sound
+    musicPlayer.playFullFile("spearH.mp3");
+    } 
+    if(x==21){// spear or sword swing but no hit
+    musicPlayer.playFullFile("swingM.mp3");
+    } 
+    if(x==22){// hitting/steping on a switch
+    musicPlayer.playFullFile("switch.mp3");
+    } 
+    
+    if(x==23){// wall sound
+    musicPlayer.setVolume(5,5);  
+    musicPlayer.playFullFile("Wall.mp3");
+    musicPlayer.setVolume(15,15);
+    } 
+    if(x==24){// victory sound
+    musicPlayer.playFullFile("Win.mp3");
+    } 
+    
+    Serial.println(x);
+}
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  
+  Wire.begin(8);
+  Wire.onReceive(receiveEvent);
+
+  if (! musicPlayer.begin()) { // initialise the music player
+     Serial.println(F("Couldn't find VS1053, do you have the right pins defined?"));
+     while (1);
+  }
+  Serial.println(F("VS1053 found"));
+  
+   if (!SD.begin(CARDCS)) {
+    Serial.println(F("SD failed, or not present"));
+    while (1);  // don't do anything more
+  }
+  printDirectory(SD.open("/"),0);
+
+  musicPlayer.setVolume(15,15);
+
+  if (! musicPlayer.useInterrupt(VS1053_FILEPLAYER_PIN_INT)){
+    Serial.println(F("DREQ pin is not an interrupt pin"));
+}
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+   delay(1000);
+
+}

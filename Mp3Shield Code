@@ -1,0 +1,126 @@
+#include <Adafruit_VS1053.h>
+#include <SD.h>
+#include <SPI.h>
+
+#define BREAKOUT_CS 10
+#define BREAKOUT_DCS 8
+#define SHIELD_CS 7
+#define SHIELD_DCS 6
+#define CARDCS 4
+#define DREQ 3
+
+Adafruit_VS1053_FilePlayer musicPlayer = Adafruit_VS1053_FilePlayer(SHIELD_CS,SHIELD_DCS,DREQ,CARDCS);
+
+void printDirectory(File dir, int numTabs) {
+   while(true) {
+     
+     File entry =  dir.openNextFile();
+     if (! entry) {
+       // no more files
+       //Serial.println("**nomorefiles**");
+       break;
+     }
+     for (uint8_t i=0; i<numTabs; i++) {
+       Serial.print('\t');
+     }
+     Serial.print(entry.name());
+     if (entry.isDirectory()) {
+       Serial.println("/");
+       printDirectory(entry, numTabs+1);
+     } else {
+       // files have sizes, directories do not
+       Serial.print("\t\t");
+       Serial.println(entry.size(), DEC);
+     }
+     entry.close();
+   }
+}
+
+void setup() {
+  // put your setup code here, to run once:
+Serial.begin(9600);
+  
+ 
+
+  if (! musicPlayer.begin()) { // initialise the music player
+     Serial.println(F("Couldn't find VS1053, do you have the right pins defined?"));
+     while (1);
+  }
+  Serial.println(F("VS1053 found"));
+  
+   if (!SD.begin(CARDCS)) {
+    Serial.println(F("SD failed, or not present"));
+    while (1);  // don't do anything more
+  }
+  printDirectory(SD.open("/"),0);
+
+  musicPlayer.setVolume(15,15);
+
+  if (! musicPlayer.useInterrupt(VS1053_FILEPLAYER_PIN_INT)){
+    Serial.println(F("DREQ pin is not an interrupt pin"));
+}
+
+}
+/* code to play each sound in the background. if you want to play a full file imediately use "musicPlayer.playFullFile( track )" instead
+
+    musicPlayer.startPlayingFile("getHit.mp3");
+ 
+ 
+    musicPlayer.startPlayingFile("swordH.mp3");
+
+
+    musicPlayer.startPlayingFile("Wilhelm.mp3");
+ 
+    musicPlayer.startPlayingFile("DeadR.mp3");
+
+    musicPlayer.startPlayingFile("doorOpen.mp3");
+ 
+    musicPlayer.startPlayingFile("Unlock.mp3");
+ 
+    musicPlayer.startPlayingFile("lava.mp3");
+  
+    musicPlayer.setVolume(5,5);
+    musicPlayer.startPlayingFile("Acid.mp3");
+    musicPlayer.setVolume(15,15);
+   
+    musicPlayer.startPlayingFile("AHit.mp3");
+    
+    musicPlayer.startPlayingFile("AMiss.mp3");
+    
+    musicPlayer.startPlayingFile("BossHit.mp3");
+    
+    musicPlayer.startPlayingFile("Bow.mp3");
+  
+    musicPlayer.startPlayingFile("BridgeB.wav");
+    
+    musicPlayer.startPlayingFile("BridgeW.mp3");
+  
+    musicPlayer.startPlayingFile("Credits.mp3");
+    
+    musicPlayer.startPlayingFile("Enrage.mp3");
+    
+    musicPlayer.startPlayingFile("HealthPU.mp3");
+    
+    musicPlayer.startPlayingFile("lowHp.mp3");
+   
+    musicPlayer.setVolume(10,10);  
+    musicPlayer.startPlayingFile("NewITM.mp3");
+    musicPlayer.setVolume(15,15);
+   
+    musicPlayer.startPlayingFile("PotBreak.mp3");
+   
+    musicPlayer.startPlayingFile("Secret.mp3");
+   
+    musicPlayer.startPlayingFile("spearH.mp3");
+    
+    musicPlayer.startPlayingFile("swingM.mp3");
+    
+    musicPlayer.startPlayingFile("switch.mp3");
+   
+    musicPlayer.setVolume(5,5);  
+    musicPlayer.startPlayingFile("Wall.mp3");
+    musicPlayer.setVolume(15,15);
+   
+    musicPlayer.startPlayingFile("Win.mp3");
+    
+    */

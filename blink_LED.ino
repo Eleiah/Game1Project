@@ -1,6 +1,9 @@
 #include "SPI.h"
 #include "Adafruit_GFX.h"
 #include "Adafruit_ILI9340.h"
+#include <SPI.h>
+#include <SD.h>
+#include <Adafruit_VS1053.h>
 
 #define _sclk 52
 #define _miso 50
@@ -8,6 +11,18 @@
 #define _cs 41
 #define _dc 40
 #define _rst 45
+
+
+//Sound code
+#define BREAKOUT_CS 10
+#define BREAKOUT_DCS 8
+#define SHIELD_CS 7
+#define SHIELD_DCS 6
+#define CARDCS 4
+#define DREQ 3
+
+Adafruit_VS1053_FilePlayer musicPlayer = Adafruit_VS1053_FilePlayer(SHIELD_CS,SHIELD_DCS,DREQ,CARDCS);//set up for the shield
+
 
 Adafruit_ILI9340 tft = Adafruit_ILI9340(_cs, _dc, _mosi, _sclk, _rst, _miso);
 
@@ -197,14 +212,12 @@ int wMap[3][3][15][15] = {{{{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //L 
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
                             {10,0,0,0,0,0,0,0,0,0,0,0,0,0,10},
                             {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}}}};
-         
-//Spacing sets the size of each block, 16x16 pixels
-const int spacing = 16;
-bool dPad[4];
+
 //Initialize array of character objects
 CHARACTER Characters[22];
 // Initialize array of room objects
 ROOM Rooms[3][3];
+
 //Boolean statments to make sure the button press is only registered once
 bool moveState;
 bool lastMoveState = 1;
@@ -212,17 +225,41 @@ bool attackState;
 bool lastAttackState = 1;
 bool weaponState;
 bool lastWeaponState = 1;
+
+//Spacing sets the size of each block, 16x16 pixels
+const int spacing = 16;
+
+//Reads input directions from the Dpad
+bool dPad[4];
+
+//Current map coodinates
 int wRow = 2;
 int wCol = 1;
+
+//Current Weapon
 int weapon = 0;
+bool spear = false;
+bool bow = false;
+int maxHealth = 16;
+
+//Number of Objects
 const int ENEMYCOUNT = 21;
 const int BREAKABLECOUNT = 13;
+
+//Boss Properties
 int bossHP = 30;
 bool bossRoom = false;
 int bossLavaRate = 6;
-int weapons = 1;
 
 void setup() {
+  /*
+  Serial.begin(9600);
+  if(!musicPlayer.begin()) {
+    Serial.println(F("Couldn't find VS1053, do you have the right pins defined?"));
+    while(1);
+  }
+  Serial.println(F("VS1053 found"));
+  */
   randomSeed(analogRead(0));
   
   // Character properties: type,posX,posY,cDirection,row,col,health,cStatus,cTile
@@ -299,11 +336,14 @@ void setup() {
     pinMode(i, INPUT);
     digitalWrite(i, HIGH);
   }
+  
   //Initialize the screen
   tft.begin();
+  
   //Set the screen to landscape and clear it
   tft.setRotation(3);
   tft.fillScreen(ILI9340_BLACK);
+  
   //initializeMap();
   drawMap();
   hearts();
@@ -318,40 +358,37 @@ void loop() {
   moveState = digitalRead(26);
   attackState = digitalRead(27);
   weaponState = digitalRead(28);
+  
   //Check if user wants to change character direction
   if(Characters[0].health > 0)
     faceDirection();
+    
   //If the weapon button's state changes
   if ((weaponState && !lastWeaponState)&& Characters[0].health>0) {
-    if (weapon != 2){
+    weapon++;
+    if (weapon == 1 && !spear)
       weapon++;
-      drawHero(Characters[0].posX,Characters[0].posY);
-    }
-    else {
+    if (weapon == 2 && !bow)
       weapon = 0;
-      drawHero(Characters[0].posX,Characters[0].posY);
-    }
+    if(weapon == 3)
+      weapon = 0;
+    drawHero(Characters[0].posX,Characters[0].posY);
   }
   lastWeaponState = weaponState;
+  
   //If the move button's state changes
   if((moveState && !lastMoveState) && Characters[0].health>0) {
     heroMove();
     enemiesMove();
-    lastMoveState = moveState;
   }
-  //If the button is in the same state, do nothing
-  else{
     lastMoveState = moveState;
-  }
+    
   //Check if the attack button's state changes
   if((attackState && !lastAttackState) && Characters[0].health>0){
     heroAttack();
     enemiesMove();
-    lastAttackState = attackState;
   }
-  else{
     lastAttackState = attackState;
-  }
 }
 
 //Place the character after a map change
@@ -359,6 +396,7 @@ void placeChar() {
   //Remove Hero from current spot
   drawTile(Characters[0].posX*spacing,Characters[0].posY*spacing,Characters[0].cTile);
   wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = Characters[0].cTile;
+  
   //Check where he should be placed
    switch(Characters[0].cDirection) {
       case 0: Characters[0].posX = 13;
@@ -382,26 +420,31 @@ void placeChar() {
          Characters[0].row++;
          break;
    }
+   
    drawMap();
    gameBorder();
    hearts();
    placeBreakables();
+   
    //Place the Hero on the map
    wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = 42;
    //Draw the hero
    drawHero(Characters[0].posX,Characters[0].posY);
+
+   //If all the switches have been press, build the brige to the boss
    if (wRow == 1 && wCol == 1 && Rooms[0][0].switches == 0 && Rooms[0][2].switches == 0) {
      for (int i = 4; i < 12; i++) {
       for (int j = 6; j < 9; j++) {
         wMap[wRow][wCol][j][i] = 1;
         drawTile(j*spacing, i*spacing, 1);
       }
-     }
-   }
+    }
+  }
 }
 
 void heroMove() {
   int newPos[2] = {};
+  //Check the direction the Hero is trying to move
   if(Characters[0].cDirection == 0) {
     newPos[0] = -1;
   }
@@ -414,16 +457,32 @@ void heroMove() {
   else {
     newPos[1] = 1;
   }
+
+  //Check if the Hero is moving to a valid square
   if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] < 10 || (wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] >= 50 && wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] <= 59)) {
     drawTile(Characters[0].posX*spacing,Characters[0].posY*spacing,Characters[0].cTile);
     wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = Characters[0].cTile;
+
+    //If the Hero is walking onto a heart, heal
     if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] == 5) {
       Characters[0].health+=2;
       hearts();
     }
+
+    //If the hero is moving onto an item
     else if (wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] == 7) {
-      weapons++;
+      if(wCol == 0 && wRow == 1)
+        spear = true;
+      if(wCol == 2 && wRow == 1)
+        bow = true;
+      if((wCol == 0 || wCol == 2) && wRow == 0) {
+        maxHealth += 4;
+        Characters[0].health = 24;
+        hearts();
+      }
     }
+
+    //If the hero is moving onto acid
     else {
       Characters[0].cTile = wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]];
       if(wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] == 3) {
@@ -431,6 +490,8 @@ void heroMove() {
         hearts();
       }
     }
+
+    //Move the Hero to the new position
     wMap[wRow][wCol][Characters[0].posX + newPos[0]][Characters[0].posY + newPos[1]] = 42;
     Characters[0].posX = Characters[0].posX + newPos[0];
     Characters[0].posY = Characters[0].posY + newPos[1];
@@ -439,9 +500,12 @@ void heroMove() {
       bossMechanics(0);
     }
   }
+
+  //If the Hero is moving into a door
   if(Characters[0].posX <= 0 || Characters[0].posX >= 14 || Characters[0].posY <= 0 || Characters[0].posY >= 14){
     placeChar();
   }
+  //If the Hero has moved far into the boss room
   if ((Characters[0].row == 0 && Characters[0].col == 1) && bossRoom == false && Characters[0].posY <= 10) {
     bossRoom = true;
   }
@@ -449,6 +513,8 @@ void heroMove() {
 
 void heroAttack(){
   int attacks[2] = {};
+
+  //Check the direction the Hero is trying to attack
   if(Characters[0].cDirection == 0)
     attacks[0] = -1;
   else if(Characters[0].cDirection == 1)
@@ -457,36 +523,48 @@ void heroAttack(){
     attacks[0] = 1;
   else
     attacks[1] = 1;
+
+  //Check which weapon the hero is using
   if (weapon == 0) {
+    //If the hero is attacking in the boss room, have the boss mechanics take an action
     if((Characters[0].row == 0 && Characters[0].col == 1) && bossRoom == 1) {
       bossMechanics(0);
     }
+    //Check if the Hero is attacking a hurtable object
     if(wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] >= 100){
       int currentEnemy = wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]]-100;
       Characters[currentEnemy].health -= 3;
+      //Check if the object is dead
       if(Characters[currentEnemy].health <= 0) {
         Characters[currentEnemy].cStatus = 0;
+        //Check if the object is an enemy or pot
         if (Characters[currentEnemy].type < 6) {
           Rooms[Characters[currentEnemy].row][Characters[currentEnemy].col].enemies--;
           checkRooms();
         }
+        //Or if it's a switch
         if (Characters[currentEnemy].type == 7) {
           Rooms[Characters[currentEnemy].row][Characters[currentEnemy].col].switches--;
           checkRooms();
         }
+        //If the dying object is a enemy or a pot, have a chance to drop a heart
         if(random(8) == 0 && Characters[currentEnemy].type < 7){
           Characters[currentEnemy].cTile = 5;
         }
+        //Delete the enemy off the map
         wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] = Characters[currentEnemy].cTile;
         drawTile(Characters[currentEnemy].posX*spacing,Characters[currentEnemy].posY*spacing,Characters[currentEnemy].cTile);
       }
     }
+    //Check if the boss if being attacked
     else if(wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] >= 60 && wMap[wRow][wCol][Characters[0].posX + attacks[0]][Characters[0].posY + attacks[1]] <= 68) {
       bossHP -= 3;
+      //Check if the boss is being enraged
       if (bossHP <= 12) {
         bossLavaRate = 2;
         bossEnrage();
       }
+      //Check if the boss has died
       if(bossHP <= 0) {
         magmaClear();
         Characters[0].health = 0;
@@ -495,11 +573,13 @@ void heroAttack(){
         tft.setTextColor(0xFFFF);
         tft.print("YOU WON");
       }
+      //If the boss hasn't died, activate the mechanic specific to the current weapon
       if (bossHP > 0) {
         bossMechanics(1);
       }
     }
   }
+  //Check everything again for the spear
   else if (weapon == 1) {
     if((Characters[0].row == 0 && Characters[0].col == 1) && bossRoom == 1) {
       bossMechanics(0);
@@ -603,6 +683,7 @@ void heroAttack(){
   }
 }
 
+//If the boss has been enraged, change all of the inner walls to lava
 void bossEnrage() {
   for(int i = 0;i<15;i++) {
     for(int j = 0;j<15;j++) {
@@ -614,6 +695,7 @@ void bossEnrage() {
   }
 }
 
+//Clear all of the Lava or almost lava off the map
 void magmaClear() {
   for(int i = 0;i<15;i++) {
     for(int j = 0;j<15;j++) {
@@ -635,7 +717,7 @@ void magmaClear() {
   drawHero(Characters[0].posX,Characters[0].posY);
 }
 
-
+//Print the side inventory game border
 void gameBorder() {
   int borderColour = 0x096F;
   tft.fillRect(15*spacing,0*spacing,spacing*5,spacing,borderColour);
@@ -651,13 +733,17 @@ void gameBorder() {
   borderTile(0,0,2);
 }
 
+//Draw the current amount of hearts
 void hearts() {
-  if(Characters[0].health > 24)
-        Characters[0].health = 24;
+  //If the character is over healed, reduce their hearts to the max hearts
+  if(Characters[0].health > maxHealth)
+        Characters[0].health = maxHealth;
+  //Clear the old hearts
   tft.fillRect(16*spacing,1*spacing,48,32,0x0000);
   int fullHearts = Characters[0].health/4;
   int partHeart = Characters[0].health%4;
   int i,j = 1,row = 0;
+  //Display the full hearts
   for(i = 16;i<fullHearts+16;i++){
     drawTile((i-row)*spacing,j*spacing,34);
     if(i == 16+2){
@@ -665,6 +751,7 @@ void hearts() {
       row = 3;
     }
   }
+  //Display the part heart
   switch(partHeart){
     case 1: drawTile((i-row)*spacing,j*spacing,31);
             break;
@@ -675,6 +762,7 @@ void hearts() {
   }
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------- Liam Comment
 void placeBreakables() {
   for (int i = ENEMYCOUNT + 1; i < ENEMYCOUNT + BREAKABLECOUNT + 1; i++) {
     if (Characters[i].row == wRow && Characters[i].col == wCol && Characters[i].cStatus == 1) {
@@ -690,12 +778,14 @@ void placeBreakables() {
   }
 }
 
+//Call each enemy to move
 void enemiesMove(){
   for(int i = 1; i < ENEMYCOUNT + 1; i++){
     if(Characters[i].cStatus == 1 && (Characters[i].col == Characters[0].col && Characters[i].row == Characters[0].row))
       enemyMove(i);
   }
 }
+
 void enemyMove(int i) {
    int row,column;
    float moveDirection[2] = {};
@@ -1051,6 +1141,7 @@ void bossMechanics(int mechanicNum) {
   }
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------- Liam Comment
 void checkRooms() {
   if (Rooms[wRow][wCol].enemies == 0 ) {
     if (wRow == 2 && wCol == 0) {
@@ -1066,10 +1157,12 @@ void checkRooms() {
   }
   if (Rooms[wRow][wCol].switches == 0) {
     if (wRow == 0 && wCol == 0) {
-      // Place heart container
+      wMap[wRow][wCol][7][3] = 7;
+      drawTile(7*spacing, 3*spacing, 7);
     }
     else if (wRow == 0 && wCol == 2) {
-      // Place heart container
+      wMap[wRow][wCol][7][2] = 7;
+      drawTile(7*spacing, 2*spacing, 7);
     }
     else if (wRow == 1 && wCol == 0) {
       wMap[wRow][wCol][7][11] = 1;
@@ -1115,6 +1208,7 @@ void drawMap() {
   }
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------- Liam Comment
 void drawArrow(int tilesMoved, int pixelsMoved) {
   if (Characters[0].cDirection == 0) {
     int refX = (Characters[0].posX + 1 - tilesMoved)*spacing - pixelsMoved - 1;
@@ -1182,9 +1276,10 @@ void drawArrow(int tilesMoved, int pixelsMoved) {
        drawTile(Characters[0].posX*spacing, (Characters[0].posY + tilesMoved)*spacing, wMap[wRow][wCol][Characters[0].posX][Characters[0].posY + tilesMoved]);
     if (wMap[wRow][wCol][Characters[0].posX][Characters[0].posY + tilesMoved + 1] < 100)
        drawTile(Characters[0].posX*spacing, (Characters[0].posY + tilesMoved + 1)*spacing, wMap[wRow][wCol][Characters[0].posX][Characters[0].posY + tilesMoved + 1]);
-}
+  }
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------- Liam Comment
 void drawBreakable(int i) {
   int x = Characters[i].posX*spacing;
   int y = Characters[i].posY*spacing;
@@ -1628,7 +1723,7 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.drawFastVLine(xPos+13,yPos+4,3,heartRed);
   }
   else if(tileType == 7) {
-    if (wCol == 0) {
+    if (wCol == 0 && wRow == 1) {
       drawTile(xPos,yPos,1);
       tft.drawLine(xPos,yPos+14,xPos+8,yPos+6,0x9DB7);
       tft.drawLine(xPos,yPos+15,xPos+15,yPos,0x9DB7);
@@ -1644,7 +1739,7 @@ void drawTile(int xPos,int yPos,int tileType) {
       tft.drawFastVLine(xPos+14,yPos+6,2,0x9DB7);
       tft.drawFastVLine(xPos+15,yPos+4,2,0x9DB7);
     }
-    if (wCol == 2) {
+    if (wCol == 2 && wRow ==1) {
       drawTile(xPos, yPos, 0);
       tft.drawLine(xPos + 1, yPos + 11, xPos + 11, yPos + 1, 0xFFFF);
       tft.drawLine(xPos + 6, yPos + 14,xPos + 14, yPos + 6, 0xC440);
@@ -1653,6 +1748,39 @@ void drawTile(int xPos,int yPos,int tileType) {
       tft.drawLine(xPos + 12, yPos,xPos + 14, yPos + 3, 0xA513);
       tft.drawFastHLine(xPos + 4, yPos + 14, 2, 0xA513);
       tft.drawFastVLine(xPos + 14, yPos + 4, 2, 0xA513);
+    }
+    if((wCol == 0 || wCol == 2) && wRow == 0) {
+      int heartGold = 0x8E38;
+      int heartRed = 0xD000;
+      tft.drawFastVLine(xPos,yPos+4,3,heartGold);
+      tft.drawFastVLine(xPos+1,yPos+3,5,heartGold);
+      tft.drawFastVLine(xPos+2,yPos+2,7,heartGold);
+      tft.drawFastVLine(xPos+3,yPos+2,8,heartGold);
+      tft.drawFastVLine(xPos+4,yPos+2,9,heartGold);
+      tft.drawFastVLine(xPos+5,yPos+3,9,heartGold);
+      tft.drawFastVLine(xPos+6,yPos+4,9,heartGold);
+      tft.drawFastVLine(xPos+7,yPos+5,9,heartGold);
+      tft.drawFastVLine(xPos+8,yPos+5,9,heartGold);
+      tft.drawFastVLine(xPos+9,yPos+4,9,heartGold);
+      tft.drawFastVLine(xPos+10,yPos+3,9,heartGold);
+      tft.drawFastVLine(xPos+11,yPos+2,9,heartGold);
+      tft.drawFastVLine(xPos+12,yPos+2,8,heartGold);
+      tft.drawFastVLine(xPos+13,yPos+2,7,heartGold);
+      tft.drawFastVLine(xPos+14,yPos+3,5,heartGold);
+      tft.drawFastVLine(xPos+15,yPos+4,3,heartGold);
+      //Red
+      tft.drawFastVLine(xPos+2,yPos+4,3,heartRed);
+      tft.drawFastVLine(xPos+3,yPos+3,5,heartRed);
+      tft.drawFastVLine(xPos+4,yPos+3,6,heartRed);
+      tft.drawFastVLine(xPos+5,yPos+4,6,heartRed);
+      tft.drawFastVLine(xPos+6,yPos+5,6,heartRed);
+      tft.drawFastVLine(xPos+7,yPos+6,6,heartRed);
+      tft.drawFastVLine(xPos+8,yPos+6,6,heartRed);
+      tft.drawFastVLine(xPos+9,yPos+5,6,heartRed);
+      tft.drawFastVLine(xPos+10,yPos+4,6,heartRed);
+      tft.drawFastVLine(xPos+11,yPos+3,6,heartRed);
+      tft.drawFastVLine(xPos+12,yPos+3,5,heartRed);
+      tft.drawFastVLine(xPos+13,yPos+4,3,heartRed);
     }
   }
   //Walls

@@ -84,9 +84,9 @@ int wMap[3][3][15][15] = {{{{10,10,10,10,10,10,10,10,10,10,10,10,10,10,10}, //L 
                             {10,16,2,2,2,2,2,2,2,2,2,2,2,16,10},
                             {10,16,2,2,2,16,16,2,2,16,16,2,2,16,10},
                             {10,16,2,2,2,16,16,2,2,16,16,2,2,16,10},
-                            {60,63,66,2,2,2,2,2,2,2,2,2,2,2,2},
-                            {61,64,67,2,2,2,2,2,2,2,2,2,2,2,2},
-                            {62,65,68,2,2,2,2,2,2,2,2,2,2,2,2},
+                            {60,63,66,2,2,2,2,2,2,2,2,2,2,2,10},
+                            {61,64,67,2,2,2,2,2,2,2,2,2,2,2,10},
+                            {62,65,68,2,2,2,2,2,2,2,2,2,2,2,10},
                             {10,16,2,2,2,16,16,2,2,16,16,2,2,16,10},
                             {10,16,2,2,2,16,16,2,2,16,16,2,2,16,10},
                             {10,16,2,2,2,2,2,2,2,2,2,2,2,16,10},
@@ -393,55 +393,81 @@ void loop() {
   lastAttackState = attackState;
 }
 
-// Place the hero after a map change
+//Place the character after a map change
 void placeChar() {
-  // Remove hero from current spot
+  //Remove Hero from current spot
   drawTile(Characters[0].posX*SPACING,Characters[0].posY*SPACING,Characters[0].cTile);
   wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = Characters[0].cTile;
   
-  // Check where he should be placed
-   switch(Characters[0].cDirection) {
-      case 0: Characters[0].posX = 13;
-         Characters[0].posY = 7;
-         wCol--;
-         Characters[0].col--;
-         break;
-      case 1: Characters[0].posX = 7;
-         Characters[0].posY = 13;
-         wRow--;
-         Characters[0].row--;
-         break;
-      case 2: Characters[0].posX = 1;
-         Characters[0].posY = 7;
-         wCol++;
-         Characters[0].col++;
-         break;
-      case 3: Characters[0].posX = 7;
-         Characters[0].posY = 1;
-         wRow++;
-         Characters[0].row++;
-         break;
-   }
+  if(Characters[0].cDirection == 3 && wCol == 1 && wRow == 2) {
+    Characters[0].posX = 7;
+    Characters[0].posY = 13;
+    Characters[0].cDirection = 1;
+    tft.fillScreen(ILI9340_BLACK);
+    tft.setCursor(60,60);
+    tft.setTextSize(2);
+    tft.setTextColor(0xFFFF);
+    tft.println("Created By");
+    tft.setTextColor(0x096F);
+    tft.setTextSize(4);
+    tft.setCursor(92,80);
+    tft.println("Liam");
+    tft.setTextColor(0xFFFF);
+    tft.setTextSize(2);
+    tft.setCursor(144,114);
+    tft.println("&");
+    tft.setTextColor(0xD100);
+    tft.setTextSize(4);
+    tft.setCursor(107,130);
+    tft.println("Torin");
+    delay(10000);
+  }
+  else {
+    //Check where he should be placed
+    switch(Characters[0].cDirection) {
+        case 0: Characters[0].posX = 13;
+          Characters[0].posY = 7;
+          wCol--;
+          Characters[0].col--;
+          break;
+        case 1: Characters[0].posX = 7;
+          Characters[0].posY = 13;
+          wRow--;
+          Characters[0].row--;
+          break;
+        case 2: Characters[0].posX = 1;
+          Characters[0].posY = 7;
+          wCol++;
+          Characters[0].col++;
+          break;
+        case 3: Characters[0].posX = 7;
+          Characters[0].posY = 1;
+          wRow++;
+          Characters[0].row++;
+          break;
+     }
+  }
    drawMap();
    gameBorder();
    hearts();
    placeBreakables();
    
-   // Place the hero on the map
+   //Place the Hero on the map
    wMap[wRow][wCol][Characters[0].posX][Characters[0].posY] = 42;
    //Draw the hero
    drawHero(Characters[0].posX,Characters[0].posY);
 
-   // If all switches in the top wRow have been pressed, build the brige to the boss
+   //If all the switches have been press, build the brige to the boss
    if (wRow == 1 && wCol == 1 && Rooms[0][0].switches == 0 && Rooms[0][2].switches == 0) {
      for (int i = 4; i < 12; i++) {
       for (int j = 6; j < 9; j++) {
         wMap[wRow][wCol][j][i] = 1;
         drawTile(j*SPACING, i*SPACING, 1);
       }
-     }
-   }
+    }
+  }
 }
+
 
 void heroMove() {
   int newPos[2] = {};
@@ -790,31 +816,31 @@ void gameBorder() {
 // Draw the hero's current health as Characters[0].health/4 hearts
 void hearts() {
   // If the character's health exceeds maxHealth, reduce health to maxHealth
-  if(Characters[0].health > 24) // Shouldn't this be maxHealth?
-        Characters[0].health = 24; // This too?
+    if(Characters[0].health > maxHealth)
+    Characters[0].health = maxHealth;
+
+  if(Characters[0].health <= 0)
+    Characters[0].health = 1;
+  
+  //Clear the old hearts
   tft.fillRect(16*SPACING,1*SPACING,48,32,0x0000);
-  // Draw Characters[0].health/4 (integer division) full hearts
   int fullHearts = Characters[0].health/4;
-  // Draw a Characters[0].health%4 part heart
   int partHeart = Characters[0].health%4;
-  int i, j = 1, row = 0;
-  // Draw full hearts into the side inventory
-  for(i = 16; i < fullHearts + 16; i++) {
-    drawTile((i-row)*SPACING, j*SPACING, 34);
-    if(i == 16 + 2){ // Do you mean 18?  Maybe make this more general so that the code works for 9+ hearts?
+  int i,j = 1,row = 0;
+  //Display the full hearts
+  for(i = 16;i<fullHearts+16;i++){
+    drawTile((i-row)*SPACING,j*SPACING,34);
+    if(i == 16+2){
       j++;
       row = 3;
     }
   }
-  // Draw the part heart into the side inventory
+  //Display the part heart
   switch(partHeart){
-    // If partHeart = 1, draw a one-quarter heart
     case 1: drawTile((i-row)*SPACING,j*SPACING,31);
             break;
-    // If partHeart = 1, draw a half heart
     case 2: drawTile((i-row)*SPACING,j*SPACING,32);
             break;
-    // If partHeart = 2, draw a three-quarter heart
     case 3: drawTile((i-row)*SPACING,j*SPACING,33);
             break;
   }
@@ -953,7 +979,7 @@ void enemyMove(int i) {
         currentMove = 3;
       }
       // If no move has been selected, increment loops - this lets the loop run one more time, now allowing movement onto the enemy's previously occupied tile
-      if (row == Characters[i].posX && column = Characters[i].posY)
+      if (row == Characters[i].posX && column == Characters[i].posY)
         loops++;
       //  If a move has been selected, increase loops by two - this breaks the loop
       else
@@ -1275,10 +1301,14 @@ void checkSwitches() {
     // If in room [0,0]
     if (wRow == 0 && wCol == 0) {
       // Place heart container
+      wMap[wRow][wCol][7][3] = 7;
+      drawTile(7*SPACING, 3*SPACING, 7);
     }
     // If in room [0,2]
     else if (wRow == 0 && wCol == 2) {
       // Place heart container
+      wMap[wRow][wCol][7][2] = 7;
+      drawTile(7*SPACING, 2*SPACING, 7);
     }
     // If in room [1,0]
     else if (wRow == 1 && wCol == 0) {
@@ -1891,9 +1921,9 @@ void drawTile(int xPos,int yPos,int tileType) {
       tft.drawFastVLine(xPos + 14, yPos + 4, 2, 0xA513);
     }
     if((wCol == 0 || wCol == 2) && wRow == 0) {
-      int heartGold = 0x8E38;
+      int heartGold = 0x8E38; // Actually silver
       int heartRed = 0xD000;
-      // Gold - shouldn't this be silver/grey?
+      // Silver
       tft.drawFastVLine(xPos,yPos+4,3,heartGold);
       tft.drawFastVLine(xPos+1,yPos+3,5,heartGold);
       tft.drawFastVLine(xPos+2,yPos+2,7,heartGold);
@@ -2093,14 +2123,14 @@ void drawTile(int xPos,int yPos,int tileType) {
   // Block 2/9
   else if(tileType == 61){
     drawTile(xPos,yPos,10);
-    // Light Gray Crown - come on Torin, be consistent with how you spell gray/grey?
+    // Light Grey Crown
     tft.drawFastVLine(xPos+5,yPos+7,2,lightGrey);
     tft.drawFastVLine(xPos+6,yPos+5,6,lightGrey);
     tft.drawFastVLine(xPos+7,yPos+4,7,lightGrey);
     tft.drawFastVLine(xPos+8,yPos+4,7,lightGrey);
     tft.drawFastVLine(xPos+9,yPos+5,6,lightGrey);
     tft.drawFastVLine(xPos+10,yPos+7,2,lightGrey);
-    // Horangens <- horns?
+    // Horns
     tft.drawFastHLine(xPos,yPos+9,2,lightGrey);
     tft.drawFastHLine(xPos+14,yPos+9,2,lightGrey);
     tft.drawFastHLine(xPos+1,yPos+10,14,lightGrey);
@@ -2112,7 +2142,7 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.drawFastHLine(xPos+13,yPos+15,3,lightGrey);
     tft.drawFastVLine(xPos+6,yPos+11,4,lightGrey);
     tft.drawFastVLine(xPos+9,yPos+11,4,lightGrey);
-    // Dark Grey Crown and Horangens <- HORNS?
+    // Dark Grey Crown and Horns
     tft.fillRect(xPos+7,yPos+6,2,3,darkGrey);
     tft.drawFastVLine(xPos,yPos+10,5,darkGrey);
     tft.drawFastVLine(xPos+15,yPos+10,5,darkGrey);
@@ -2132,7 +2162,7 @@ void drawTile(int xPos,int yPos,int tileType) {
     // Yellow
     tft.fillRect(xPos+7,yPos+13,2,3,yellow);
     tft.drawFastHLine(xPos+5,yPos+15,6,yellow);
-    // Orangeange <- orange?
+    // Orange
     tft.drawFastHLine(xPos+4,yPos+14,2,orange);
     tft.drawFastHLine(xPos+10,yPos+14,2,orange);
     tft.drawFastHLine(xPos+3,yPos+15,2,orange);
@@ -2195,7 +2225,7 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.drawFastHLine(xPos+3,yPos+9,9,darkGrey);
     tft.drawFastHLine(xPos+3,yPos+10,10,darkGrey);
     tft.drawFastHLine(xPos+7,yPos+11,6,darkGrey);
-    // Orangeange <- ORANGE?
+    // Orange
     tft.drawFastVLine(xPos+10,yPos,2,orange);
     tft.drawFastHLine(xPos+11,yPos+1,5,orange);
     tft.drawPixel(xPos+7,yPos+3,orange);
@@ -2260,7 +2290,7 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.drawFastHLine(xPos+7,yPos+9,2,darkGrey);
     tft.drawFastHLine(xPos+6,yPos+14,4,darkGrey);
     tft.drawFastHLine(xPos+5,yPos+15,6,darkGrey);
-    // orangeange <- ORANGE?!
+    // Orange
     tft.drawFastHLine(xPos+1,yPos,4,orange);
     tft.drawFastHLine(xPos,yPos+1,3,orange);
     tft.drawFastHLine(xPos+11,yPos,4,orange);
@@ -2284,7 +2314,7 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.drawFastHLine(xPos+12,yPos+14,2,orange);
     tft.drawPixel(xPos+2,yPos+15,orange);
     tft.drawPixel(xPos+13,yPos+15,orange);
-    // Draw Yellow <- any reason to say 'draw' now?
+    // Yellow
     tft.drawFastHLine(xPos,yPos+2,4,yellow);
     tft.drawFastHLine(xPos+3,yPos+1,4,yellow);
     tft.drawFastHLine(xPos+5,yPos,2,yellow);
@@ -2309,7 +2339,7 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.drawPixel(xPos+14,yPos+14,yellow);
     tft.drawFastHLine(xPos,yPos+15,2,yellow);
     tft.drawFastHLine(xPos+14,yPos+15,2,yellow);
-    //Draw Red <- any reason to say 'draw' now?
+    // Red
     tft.drawFastHLine(xPos,yPos+3,6,red);
     tft.drawFastHLine(xPos+4,yPos+2,8,red);
     tft.drawFastHLine(xPos+10,yPos+3,6,red);
@@ -2322,7 +2352,7 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.drawFastHLine(xPos+9,yPos+11,6,red);
     tft.drawFastVLine(xPos,yPos+13,2,red);
     tft.drawFastVLine(xPos+15,yPos+13,2,red);
-    //Draw Pink <- any reason to say 'draw' now?
+    // Hot Pink
     tft.drawFastVLine(xPos,yPos+11,2,hotPink);
     tft.drawFastVLine(xPos+15,yPos+11,2,hotPink);
   }
@@ -2354,7 +2384,7 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.drawFastHLine(xPos+4,yPos+9,9,darkGrey);
     tft.drawFastHLine(xPos+3,yPos+10,10,darkGrey);
     tft.drawFastHLine(xPos+4,yPos+11,6,darkGrey);
-    // orangeange <- Are you serious with this orange thing?
+    // Orange
     tft.drawFastVLine(xPos+5,yPos,2,orange);
     tft.drawFastHLine(xPos,yPos+1,5,orange);
     tft.drawPixel(xPos+8,yPos+3,orange);
@@ -2437,7 +2467,7 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.drawFastVLine(xPos+13,yPos+12,4,darkGrey);
     tft.drawFastVLine(xPos+14,yPos+13,2,darkGrey);
     tft.drawFastVLine(xPos+15,yPos+13,1,darkGrey);
-    // orangeange <- I mean really... (?)
+    // Orange
     tft.drawFastHLine(xPos+1,yPos,3,orange);
     tft.drawFastHLine(xPos+3,yPos+1,9,orange);
     tft.drawFastVLine(xPos+11,yPos+1,3,orange);
@@ -2508,7 +2538,7 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.drawFastHLine(xPos+7,yPos+6,2,darkGrey);
     tft.drawFastVLine(xPos,yPos+13,3,darkGrey);
     tft.drawFastVLine(xPos+15,yPos+13,3,darkGrey);
-    // orangeange <- How did this happen?
+    // Orange
     tft.drawFastVLine(xPos,yPos,3,orange);
     tft.drawPixel(xPos+1,yPos,orange);
     tft.drawFastVLine(xPos+15,yPos,3,orange);
@@ -2589,7 +2619,7 @@ void drawTile(int xPos,int yPos,int tileType) {
     tft.drawFastVLine(xPos+2,yPos+12,4,darkGrey);
     tft.drawFastVLine(xPos+1,yPos+13,2,darkGrey);
     tft.drawFastVLine(xPos,yPos+13,1,darkGrey);
-    // orangeange <- What happened?
+    // Orange
     tft.drawFastHLine(xPos+12,yPos,3,orange);
     tft.drawFastHLine(xPos+4,yPos+1,9,orange);
     tft.drawFastVLine(xPos+4,yPos+1,3,orange);

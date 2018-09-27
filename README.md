@@ -1,4 +1,2 @@
-# Game1Project
-this a gam
+# Cave of Imps
 
-this is a dac guide: http://www.instructables.com/id/Arduino-Audio-Output/
